@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'AddReviewPage.dart';
 
 class ReadReviewsPage extends StatefulWidget {
-  String rest_id;
+  String rest_id, name, avg_rating, image;
 
-  ReadReviewsPage({@required this.rest_id});
+  ReadReviewsPage({@required this.rest_id, this.name, this.avg_rating, this.image});
 
   @override
   _ReadReviewsPageState createState() => _ReadReviewsPageState();
@@ -45,8 +45,43 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(10),
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.grey[200],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(width: screenWidth - 20,
+                                height: 250,
+                                padding: EdgeInsets.only(top: 6, bottom: 3),
+                                child: Image.network(widget.image, fit: BoxFit.fill,)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Container(width: screenWidth - 90,
+                                    padding: EdgeInsets.only(top: 3),
+                                    child: Text(widget.name, style: TextStyle(fontSize: 20), softWrap: true,)),
+                                Container(width: 45,
+                                    alignment: Alignment.topRight,
+                                    padding: EdgeInsets.only(top: 3, right: 3),
+                                    child: Text(widget.avg_rating, style: TextStyle(fontSize: 20), softWrap: true,)),
+                                Icon(Icons.star),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
                   width: screenWidth,
-                  height: screenHeight-170,
+                  height: (screenHeight-100)/2,
                   child: FutureBuilder(
                     future: getListsFromDatabase(),
                     builder: (context,res){

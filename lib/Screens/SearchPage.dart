@@ -137,7 +137,9 @@ class _SearchPageState extends State<SearchPage> {
                                                         child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
                                                         onPressed: (){
 
-                                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ReadReviewsPage(rest_id: keyLists[index])));
+                                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                              ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
+                                                          ));
 
                                                         },
                                                       )
