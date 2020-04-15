@@ -133,31 +133,36 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
                         FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
-                        double average_ratings = (ratingList[0]+ratingList[1]+ratingList[2]+ratingList[3]+ratingList[4])/5;
-                        Map<String,dynamic> listMap = new Map();
-                        listMap.putIfAbsent("review", ()=> review);
-                        listMap.putIfAbsent("quality", ()=> ratingList[0].toString());
-                        listMap.putIfAbsent("quantity", ()=> ratingList[1].toString());
-                        listMap.putIfAbsent("cost", ()=> ratingList[2].toString());
-                        listMap.putIfAbsent("hygiene", ()=> ratingList[3].toString());
-                        listMap.putIfAbsent("ambience", ()=> ratingList[4].toString());
-                        listMap.putIfAbsent("average_rating", ()=> average_ratings.toString());
-                        listMap.putIfAbsent("posted_by", ()=> user.uid);
+                        await Firestore.instance.collection("Users").document(user.uid).get().then((userProfile){
 
-                        Firestore.instance.collection("Restaurants").document(widget.rest_id).collection('Reviews').document(user.uid).setData(listMap).whenComplete((){
-                          _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Review Posted"), duration: Duration(seconds: 3),));
+                          double average_ratings = (ratingList[0]+ratingList[1]+ratingList[2]+ratingList[3]+ratingList[4])/5;
+                          Map<String,dynamic> listMap = new Map();
+                          listMap.putIfAbsent("review", ()=> review);
+                          listMap.putIfAbsent("quality", ()=> ratingList[0].toString());
+                          listMap.putIfAbsent("quantity", ()=> ratingList[1].toString());
+                          listMap.putIfAbsent("cost", ()=> ratingList[2].toString());
+                          listMap.putIfAbsent("hygiene", ()=> ratingList[3].toString());
+                          listMap.putIfAbsent("ambience", ()=> ratingList[4].toString());
+                          listMap.putIfAbsent("average_rating", ()=> average_ratings.toString());
+                          listMap.putIfAbsent("posted_by", ()=> user.uid);
+                          listMap.putIfAbsent("posted_by_name", ()=> userProfile.data['name']);
 
-                          setState(() {
-                            isLoading = false;
+                          Firestore.instance.collection("Restaurants").document(widget.rest_id).collection('Reviews').document(user.uid).setData(listMap).whenComplete((){
+                            _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Review Posted"), duration: Duration(seconds: 3),));
+
+                            setState(() {
+                              isLoading = false;
+                            });
+
+                            Navigator.pop(context);
+
+                          }).catchError((error){
+                            setState(() {
+                              isLoading = false;
+                            });
+                            print("Error: "+error.toString());
                           });
 
-                          Navigator.pop(context);
-
-                        }).catchError((error){
-                          setState(() {
-                            isLoading = false;
-                          });
-                          print("Error: "+error.toString());
                         });
 
                       }
