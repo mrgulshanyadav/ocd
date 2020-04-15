@@ -41,24 +41,20 @@ class _NavigationPageState extends State<NavigationPage> {
             },
             items: [
               BottomNavigationBarItem(
-                icon: new Icon(Icons.home, color: _currentIndex == 0 ? Colors.green : Colors.grey,),
-                title: new Text('Home', style: TextStyle(color: _currentIndex == 0 ? Colors.green : Colors.grey,),),
+                icon: new Icon(Icons.home, color: _currentIndex == 0 ? Theme.of(context).primaryColor : Colors.grey,),
+                title: new Text('Home', style: TextStyle(color: _currentIndex == 0 ? Theme.of(context).primaryColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
-                icon: new Icon(Icons.search, color: _currentIndex == 1 ? Colors.green : Colors.grey,),
-                title: new Text('Search', style: TextStyle(color: _currentIndex == 1 ? Colors.green : Colors.grey,),),
-              ),
-//              BottomNavigationBarItem(
-//                icon: new Icon(Icons.add_circle_outline, color: _currentIndex == 2 ? Colors.green : Colors.grey,),
-//                title: new Text('Add', style: TextStyle(color: _currentIndex == 2 ? Colors.green : Colors.grey,),),
-//              ),
-              BottomNavigationBarItem(
-                icon: new Icon(Icons.star_border, color: _currentIndex == 2 ? Colors.green : Colors.grey,),
-                title: new Text('Recommendations', style: TextStyle(color: _currentIndex == 2 ? Colors.green : Colors.grey,),),
+                icon: new Icon(Icons.search, color: _currentIndex == 1 ? Theme.of(context).primaryColor : Colors.grey,),
+                title: new Text('Search', style: TextStyle(color: _currentIndex == 1 ? Theme.of(context).primaryColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
-                icon: new Icon(Icons.person, color: _currentIndex == 3 ? Colors.green : Colors.grey,),
-                title: new Text('My Profile', style: TextStyle(color: _currentIndex == 3 ? Colors.green : Colors.grey,),),
+                icon: new Icon(Icons.star_border, color: _currentIndex == 2 ? Theme.of(context).primaryColor : Colors.grey,),
+                title: new Text('Recommendations', style: TextStyle(color: _currentIndex == 2 ? Theme.of(context).primaryColor : Colors.grey,),),
+              ),
+              BottomNavigationBarItem(
+                icon: new Icon(Icons.person, color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),
+                title: new Text('My Profile', style: TextStyle(color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),),
               ),
             ],
             fixedColor: Colors.grey,

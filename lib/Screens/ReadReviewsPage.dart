@@ -41,7 +41,7 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       resizeToAvoidBottomPadding: true,
-      appBar: AppBar(title: Text("Reviews & Ratings"),),
+      appBar: AppBar(title: Text("Reviews & Ratings"), backgroundColor: Colors.redAccent,),
       key: _scaffoldKey,
       body: SafeArea(
         child: Center(
@@ -50,43 +50,37 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
             children: <Widget>[
               Container(
                 alignment: Alignment.center,
-                padding: EdgeInsets.all(10),
                 width: MediaQuery.of(context).size.width,
-                color: Colors.grey[200],
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Container(width: screenWidth,
+                        height: 250,
+                        child: Image.network(widget.image, fit: BoxFit.fill,)),
+                    Divider(thickness: 0.2,),
                     Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      padding: EdgeInsets.all(7),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Container(width: screenWidth - 20,
-                              height: 250,
-                              padding: EdgeInsets.only(top: 6, bottom: 3),
-                              child: Image.network(widget.image, fit: BoxFit.fill,)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(width: screenWidth - 90,
-                                  padding: EdgeInsets.only(top: 3),
-                                  child: Text(widget.name, style: TextStyle(fontSize: 20), softWrap: true,)),
-                              Container(width: 45,
-                                  alignment: Alignment.topRight,
-                                  padding: EdgeInsets.only(top: 3, right: 3),
-                                  child: Text(widget.avg_rating, style: TextStyle(fontSize: 20), softWrap: true,)),
-                              Icon(Icons.star),
-                            ],
-                          ),
+                          Container(width: screenWidth - 90,
+                              padding: EdgeInsets.only(top: 3),
+                              child: Text(widget.name, style: TextStyle(fontSize: 20), softWrap: true,)),
+                          Container(width: 45,
+                              alignment: Alignment.topRight,
+                              padding: EdgeInsets.only(top: 3, right: 3),
+                              child: Text(widget.avg_rating, style: TextStyle(fontSize: 20), softWrap: true,)),
+                          Icon(Icons.star),
                         ],
                       ),
                     ),
+                    Divider(thickness: 0.2),
                   ],
                 ),
               ),
               Expanded(
                 child: Container(
                   width: screenWidth,
-                  height: (screenHeight)/2,
                   child: FutureBuilder(
                     future: getReviewsListsFromDatabase(widget.rest_id),
                     builder: (context,res){
@@ -102,15 +96,16 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
 
                         return ListView.builder(
                             itemCount: reviewsListMap.length,
+                            shrinkWrap: true,
                             itemBuilder: (context, index){
 
                               return Card(
-                                elevation: 4,
-                                margin: EdgeInsets.all(10),
+                                elevation: 1,
+//                                margin: EdgeInsets.all(10),
                                 child: Container(
                                   padding: EdgeInsets.all(10),
                                   width: MediaQuery.of(context).size.width,
-                                  color: Colors.grey[200],
+                                  color: Colors.grey[000],
                                   child: Column(
                                     children: <Widget>[
                                       Row(
@@ -118,7 +113,7 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                         children: <Widget>[
                                           Container(width: screenWidth - 110,
                                               padding: EdgeInsets.only(top: 3),
-                                              child: Text(reviewsListMap[index]['posted_by_name'], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                              child: Text(reviewsListMap[index]['posted_by_name'], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: false,)),
                                           Container(width: 45,
                                               alignment: Alignment.topRight,
                                               padding: EdgeInsets.only(top: 3, right: 3),
@@ -140,10 +135,10 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                         children: <Widget>[
                                           Container(
                                               padding: EdgeInsets.only(top: 3),
-                                              child: Text('Quality', style: TextStyle(fontSize: 20), softWrap: true,)),
+                                              child: Text('Quality', style: TextStyle(fontSize: 20, color: Colors.grey[700]), softWrap: true,)),
                                           Container(
                                               padding: EdgeInsets.only(top: 3, right: 0),
-                                              child: StarRating(rating: double.parse(reviewsListMap[index]['quality']))
+                                              child: StarRating(rating: double.parse(reviewsListMap[index]['quality']), color: Colors.redAccent,)
                                           ),
                                         ],
                                       ),
@@ -152,10 +147,10 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                         children: <Widget>[
                                           Container(
                                               padding: EdgeInsets.only(top: 3),
-                                              child: Text('Quantity', style: TextStyle(fontSize: 20), softWrap: true,)),
+                                              child: Text('Quantity', style: TextStyle(fontSize: 20, color: Colors.grey[700]), softWrap: true,)),
                                           Container(
                                               padding: EdgeInsets.only(top: 3, right: 0),
-                                              child: StarRating(rating: double.parse(reviewsListMap[index]['quantity']))
+                                              child: StarRating(rating: double.parse(reviewsListMap[index]['quantity']), color: Colors.redAccent,)
                                           ),
                                         ],
                                       ),
@@ -164,10 +159,10 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                         children: <Widget>[
                                           Container(
                                               padding: EdgeInsets.only(top: 3),
-                                              child: Text('Cost', style: TextStyle(fontSize: 20), softWrap: true,)),
+                                              child: Text('Cost', style: TextStyle(fontSize: 20, color: Colors.grey[700]), softWrap: true,)),
                                           Container(
                                               padding: EdgeInsets.only(top: 3, right: 0),
-                                              child: StarRating(rating: double.parse(reviewsListMap[index]['cost']))
+                                              child: StarRating(rating: double.parse(reviewsListMap[index]['cost']),color: Colors.redAccent,)
                                           ),
                                         ],
                                       ),
@@ -176,10 +171,10 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                         children: <Widget>[
                                           Container(
                                               padding: EdgeInsets.only(top: 3),
-                                              child: Text('Hygiene', style: TextStyle(fontSize: 20), softWrap: true,)),
+                                              child: Text('Hygiene', style: TextStyle(fontSize: 20, color: Colors.grey[700]), softWrap: true,)),
                                           Container(
                                               padding: EdgeInsets.only(top: 3, right: 0),
-                                              child: StarRating(rating: double.parse(reviewsListMap[index]['hygiene']))
+                                              child: StarRating(rating: double.parse(reviewsListMap[index]['hygiene']), color: Colors.redAccent,)
                                           ),
                                         ],
                                       ),
@@ -188,10 +183,10 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                         children: <Widget>[
                                           Container(
                                               padding: EdgeInsets.only(top: 3),
-                                              child: Text('Ambience', style: TextStyle(fontSize: 20), softWrap: true,)),
+                                              child: Text('Ambience', style: TextStyle(fontSize: 20, color: Colors.grey[700]), softWrap: true,)),
                                           Container(
                                               padding: EdgeInsets.only(top: 3, right: 0),
-                                              child: StarRating(rating: double.parse(reviewsListMap[index]['ambience']))
+                                              child: StarRating(rating: double.parse(reviewsListMap[index]['ambience']), color: Colors.redAccent,)
                                           ),
                                         ],
                                       ),

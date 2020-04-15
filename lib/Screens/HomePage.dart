@@ -8,10 +8,7 @@ import 'ViewPostPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -48,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.redAccent,
         onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddPostPage()));
         },
@@ -107,12 +104,12 @@ class _HomePageState extends State<HomePage> {
                                 );
                               },
                               child: Card(
-                                elevation: 4,
+                                elevation: 3,
                                 margin: EdgeInsets.all(10),
                                 child: Container(
                                   padding: EdgeInsets.all(5),
                                   width: MediaQuery.of(context).size.width,
-                                  color: Colors.grey[200],
+                                  color: Colors.grey[000],
                                   child: Container(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,11 +128,11 @@ class _HomePageState extends State<HomePage> {
                                             Container(
                                                 alignment: Alignment.topLeft,
                                                 padding: EdgeInsets.all(5),
-                                                child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
                                             Container(
                                                 alignment: Alignment.topRight,
                                                 padding: EdgeInsets.all(5),
-                                                child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
                                           ],
                                         ),
                                         Container(
@@ -153,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: <Widget>[
                                                     IconButton(
-                                                      icon: Icon(likeMap[index]? Icons.favorite: Icons.favorite_border),
+                                                      icon: Icon(likeMap[index]? Icons.favorite: Icons.favorite_border, color: Colors.red,),
                                                       onPressed: () async {
 
                                                         // like dislike

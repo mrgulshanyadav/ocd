@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'OCD',
       theme: ThemeData(
-        primaryColor: Colors.green,
+        primaryColor: Colors.redAccent,
       ),
       home: Scaffold(
         body: SplashScreen(), //NavigationPage(), //FirebaseAuth.instance.currentUser()!=null? NavigationPage() : Login(),

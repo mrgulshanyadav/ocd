@@ -78,70 +78,79 @@ class _SearchPageState extends State<SearchPage> {
                         itemBuilder: (context, index){
 
                           if(listMap[index]["name"].toString().toLowerCase().contains(search_text.toLowerCase())) {
-                            return Card(
-                              elevation: 4,
-                              margin: EdgeInsets.all(10),
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                width: MediaQuery.of(context).size.width,
-                                color: Colors.grey[200],
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Container(width: screenWidth - 110,
-                                                  padding: EdgeInsets.only(top: 3),
-                                                  child: Text(listMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                              Container(width: 45,
-                                                  alignment: Alignment.topRight,
-                                                  padding: EdgeInsets.only(top: 3, right: 3),
-                                                  child: Text(listMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                              Icon(Icons.star),
-                                            ],
-                                          ),
-                                          Container(width: screenWidth - 40,
-                                              height: 250,
-                                              padding: EdgeInsets.only(top: 6, bottom: 3),
-                                              child: Image.network(listMap[index]["image"], fit: BoxFit.fill,)),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Container(width: 160,
-                                                  padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                  child: FlatButton(
-                                                    child: Text("Write Review", style: TextStyle(color: Colors.blue),),
-                                                    onPressed: (){
+                            return GestureDetector(
+                              onTap: (){
 
-                                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index])));
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                    ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
+                                ));
 
-                                                    },
-                                                  )
-                                              ),
-                                              Container(width: 160,
-                                                  padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                  child: FlatButton(
-                                                    child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
-                                                    onPressed: (){
+                              },
+                              child: Card(
+                                elevation: 3,
+                                margin: EdgeInsets.all(10),
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  width: MediaQuery.of(context).size.width,
+                                  color: Colors.grey[000],
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Container(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: <Widget>[
+                                                Container(width: screenWidth - 110,
+                                                    padding: EdgeInsets.all(5),
+                                                    child: Text(listMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                Container(width: 45,
+                                                    alignment: Alignment.topRight,
+                                                    padding: EdgeInsets.all(5),
+                                                    child: Text(listMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                Icon(Icons.star),
+                                              ],
+                                            ),
+                                            Container(width: screenWidth - 40,
+                                                height: 250,
+                                                padding: EdgeInsets.only(top: 6, bottom: 3),
+                                                child: Image.network(listMap[index]["image"], fit: BoxFit.fill,)),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: <Widget>[
+                                                Container(width: 160,
+                                                    padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                    child: FlatButton(
+                                                      child: Text("Write Review", style: TextStyle(color: Colors.blue),),
+                                                      onPressed: (){
 
-                                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                          ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
-                                                      ));
+                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index])));
 
-                                                    },
-                                                  )
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                                      },
+                                                    )
+                                                ),
+                                                Container(width: 160,
+                                                    padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                    child: FlatButton(
+                                                      child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
+                                                      onPressed: (){
+
+                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                            ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
+                                                        ));
+
+                                                      },
+                                                    )
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             );

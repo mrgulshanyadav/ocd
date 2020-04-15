@@ -41,7 +41,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
     double screenWidth =  MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Write Review"),),
+      appBar: AppBar(title: Text("Write Review"), backgroundColor: Colors.redAccent,),
       key: _scaffoldKey,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -77,6 +77,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 new StarRating(
                   rating: ratingList[0],
                   onRatingChanged: (rating) => setState(() => this.ratingList[0] = rating),
+                  color: Colors.redAccent,
                 ),
                 Container(
                     width: screenWidth,
@@ -86,6 +87,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 new StarRating(
                   rating: ratingList[1],
                   onRatingChanged: (rating) => setState(() => this.ratingList[1] = rating),
+                  color: Colors.redAccent,
                 ),
                 Container(
                     width: screenWidth,
@@ -95,6 +97,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 new StarRating(
                   rating: ratingList[2],
                   onRatingChanged: (rating) => setState(() => this.ratingList[2] = rating),
+                  color: Colors.redAccent,
                 ),
                 Container(
                     width: screenWidth,
@@ -104,6 +107,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 new StarRating(
                   rating: ratingList[3],
                   onRatingChanged: (rating) => setState(() => this.ratingList[3] = rating),
+                  color: Colors.redAccent,
                 ),
                 Container(
                     width: screenWidth,
@@ -113,12 +117,13 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 new StarRating(
                   rating: ratingList[4],
                   onRatingChanged: (rating) => setState(() => this.ratingList[4] = rating),
+                  color: Colors.redAccent,
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
                   child: !isLoading? RaisedButton(
                     child: Text("Post",style: TextStyle(color: Colors.white),),
-                    color: Colors.green,
+                    color: Colors.redAccent,
                     padding: EdgeInsets.all(15),
                     onPressed: () async {
                       // save into database firebase

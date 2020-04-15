@@ -69,7 +69,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                             padding: EdgeInsets.all(10),
                             child: Row(
                               children: <Widget>[
-                                Text('Name: ', style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                                Text('Name: ', style: TextStyle(fontSize: 20, color: Colors.grey[700]), textAlign: TextAlign.center,),
                                 Text(userMap['name'], style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
                               ],
                             )
@@ -79,7 +79,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                             padding: EdgeInsets.all(10),
                             child: Row(
                               children: <Widget>[
-                                Text('Phone: ', style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                                Text('Phone: ', style: TextStyle(fontSize: 20, color: Colors.grey[700]), textAlign: TextAlign.center,),
                                 Text(userMap['mobile'], style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
                               ],
                             )
@@ -89,7 +89,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                             padding: EdgeInsets.all(10),
                             child: Row(
                               children: <Widget>[
-                                Text('Email: ', style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                                Text('Email: ', style: TextStyle(fontSize: 20, color: Colors.grey[700]), textAlign: TextAlign.center,),
                                 Text(userMap['email'], style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
                               ],
                             )
