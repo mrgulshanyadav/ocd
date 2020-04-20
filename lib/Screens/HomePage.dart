@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'AddPostPage.dart';
 import 'ViewPostPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,6 +26,54 @@ class _HomePageState extends State<HomePage> {
 
   Map<int, bool> likeMap;
 
+  // get User location
+
+  Location location = new Location();
+
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+  LocationData _locationData;
+
+  Future<void> getUserLocation() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('lat', _locationData.latitude);
+    prefs.setDouble('long', _locationData.longitude);
+
+    print('lat: '+_locationData.latitude.toString());
+    print('long: '+_locationData.longitude.toString());
+
+    location.onLocationChanged.listen((LocationData currentLocation) async {
+      // Use current location
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setDouble('lat', currentLocation.latitude);
+      prefs.setDouble('long', currentLocation.longitude);
+
+      print('updated lat: '+currentLocation.latitude.toString());
+      print('updated long: '+currentLocation.longitude.toString());
+
+    });
+
+  }
+
+
   @override
   void initState() {
     search_text = "";
@@ -32,6 +82,8 @@ class _HomePageState extends State<HomePage> {
     keyLists = new List();
 
     likeMap = new Map();
+
+    getUserLocation();
 
     super.initState();
   }

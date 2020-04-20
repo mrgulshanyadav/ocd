@@ -5,7 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddPostPage extends StatefulWidget {
   @override
@@ -14,9 +17,9 @@ class AddPostPage extends StatefulWidget {
 
 class _AddPostPageState extends State<AddPostPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+  TextEditingController _textEditingController = new TextEditingController();
 
-
-  String title, description, location;
+  String title, description, event_location;
 
 
   File _image;
@@ -88,13 +91,98 @@ class _AddPostPageState extends State<AddPostPage> {
 
   bool isLoading;
 
+  double lat, long;
+
+  List<Placemark> addresses;
+
+  Future<void> getLocationDataFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    double _lat = prefs.getDouble('lat')?? 0.0;
+    double _long = prefs.getDouble('long')?? 0.0;
+    setState(() {
+      lat = _lat;
+      long = _long;
+    });
+    List<Placemark> _placemark = await Geolocator().placemarkFromCoordinates(_lat, _long);
+    setState(() {
+      addresses = _placemark;
+      event_location = _placemark[0].locality ?? _placemark[0].administrativeArea?? _placemark[0].country?? 'NA';
+      _textEditingController.text = event_location;
+    });
+    print('event_location: '+event_location);
+    print('Address: '+ _placemark[0].name +', '+ _placemark[0].administrativeArea+', '+ _placemark[0].locality + ', '+ _placemark[0].subLocality+', '
+        + _placemark[0].subAdministrativeArea +', '+ _placemark[0].country+ ', '+ _placemark[0].postalCode);
+
+  }
+
+  // get User location
+
+  Location location = new Location();
+
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+  LocationData _locationData;
+
+  Future<void> getUserLocation() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('lat', _locationData.latitude);
+    prefs.setDouble('long', _locationData.longitude);
+
+    print('lat: '+_locationData.latitude.toString());
+    print('long: '+_locationData.longitude.toString());
+
+    location.onLocationChanged.listen((LocationData currentLocation) async {
+      // Use current location
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setDouble('lat', currentLocation.latitude);
+      prefs.setDouble('long', currentLocation.longitude);
+
+      print('updated lat: '+currentLocation.latitude.toString());
+      print('updated long: '+currentLocation.longitude.toString());
+
+    });
+
+    setState(() {
+      long = _locationData.longitude;
+      lat = _locationData.latitude;
+    });
+
+  }
+
+
   @override
   void initState() {
     title = "";
     description = "";
-    location = "";
+    event_location = "";
+    lat = 0.0;
+    long = 0.0;
 
     isLoading = false;
+
+    addresses = new List();
+
+    getLocationDataFromSharedPreferences().whenComplete((){
+      getUserLocation();
+    });
 
     super.initState();
   }
@@ -174,19 +262,23 @@ class _AddPostPageState extends State<AddPostPage> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
-                  child: TextField(
-                    decoration: InputDecoration(
-                        hintText: 'Event Location',
-                        labelText: 'Event Location',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+                  child: FocusScope(
+                    canRequestFocus: false,
+                    child: TextFormField(
+                      controller: _textEditingController,
+                      decoration: InputDecoration(
+                          hintText: 'Event Location',
+                          labelText: 'Event Location',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          )
+                      ),
+                      onChanged: (input){
+                        setState(() {
+                          event_location = input;
+                        });
+                      },
                     ),
-                    onChanged: (input){
-                      setState(() {
-                        location = input;
-                      });
-                    },
                   ),
                 ),
                 Container(
@@ -202,7 +294,7 @@ class _AddPostPageState extends State<AddPostPage> {
                         _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Enter Title!')));
                       }else if(description.isEmpty){
                         _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Enter Description!')));
-                      }else if(location.isEmpty){
+                      }else if(event_location.isEmpty){
                         _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Enter Location!')));
                       } else if(_image==null){
                         _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Select Picture!')));
@@ -234,10 +326,13 @@ class _AddPostPageState extends State<AddPostPage> {
                           Map<String,dynamic> listMap = new Map();
                           listMap.putIfAbsent("title", ()=> title);
                           listMap.putIfAbsent("description", ()=> description);
-                          listMap.putIfAbsent("location", ()=> location);
+                          listMap.putIfAbsent("location", ()=> event_location);
                           listMap.putIfAbsent("post_pic", ()=> post_pic_url);
                           listMap.putIfAbsent("posted_by", ()=> user.uid);
                           listMap.putIfAbsent("post_date", ()=> DateTime.now().day.toString()+'-'+DateTime.now().month.toString()+'-'+DateTime.now().year.toString());
+                          listMap.putIfAbsent("lat", ()=> lat);
+                          listMap.putIfAbsent("long", ()=> long);
+
 
                           Firestore.instance.collection("Posts").add(listMap).whenComplete((){
                             _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Post Added"), duration: Duration(seconds: 3),));

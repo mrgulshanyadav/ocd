@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ocd/Screens/ForgetPassword.dart';
+import 'package:location/location.dart';
 import 'package:ocd/Screens/Login.dart';
-import 'package:ocd/Screens/Register.dart';
 import 'package:ocd/Screens/NavigationPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,12 +34,63 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
+
+  // get User location
+
+  Location location = new Location();
+
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+  LocationData _locationData;
+
+  Future<void> getUserLocation() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('lat', _locationData.latitude);
+    prefs.setDouble('long', _locationData.longitude);
+
+    print('lat: '+_locationData.latitude.toString());
+    print('long: '+_locationData.longitude.toString());
+
+    location.onLocationChanged.listen((LocationData currentLocation) async {
+
+      // Use current location
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setDouble('lat', currentLocation.latitude);
+      prefs.setDouble('long', currentLocation.longitude);
+
+      print('updated lat: '+currentLocation.latitude.toString());
+      print('updated long: '+currentLocation.longitude.toString());
+
+    });
+
+  }
+
+
   @override
   void initState() {
 
     isTimeOut = false;
 
     getFirebaseUser();
+    getUserLocation();
 
     super.initState();
   }
