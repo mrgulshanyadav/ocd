@@ -3,6 +3,7 @@ import 'dart:math' show cos, sqrt, asin;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
@@ -27,9 +28,14 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
 
   Map<int, bool> postLikeMap;
 
-  List<Map<String,dynamic>> restaurantListMap;
+  List<Map<dynamic,dynamic>> restaurantListMap;
   List<Map<String,dynamic>> restaurantRatingsListMap;
   List restaurantKeyLists;
+
+  // used for filters
+  double rest_radius, post_radius;
+  double rest_ratings;
+  int post_likes;
 
   double lat, long;
 
@@ -120,6 +126,12 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     long = 0.0;
     addresses = new List();
 
+    rest_radius = 10.0;
+    rest_ratings = 4.0;
+
+    post_radius = 10.0;
+    post_likes = 0;
+
     getLocationDataFromSharedPreferences().whenComplete((){
       getUserLocation();
     });
@@ -148,7 +160,23 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(addresses.length>0? 'Location: '+ addresses[0].locality?? addresses[0].administrativeArea?? addresses[0].country?? 'NA' : 'NA'),//Text('Location: '+'(lat:'+lat.toString()+') (long:'+long.toString()+')'),
+          leading: Icon(Icons.my_location),
+          title: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                    addresses.length>0? addresses[0].name +', '+addresses[0].thoroughfare?? addresses[0].locality?? addresses[0].country?? 'NA' : 'NA',
+                  style: TextStyle(fontSize: 14),
+                ),
+                Text(
+                    addresses.length>0? addresses[0].locality+', '+addresses[0].administrativeArea+', '+ addresses[0].country?? addresses[0].country?? 'NA' : 'NA',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+//          actions: <Widget>[IconButton(icon: Icon(Icons.more_vert), onPressed: (){},)],
           backgroundColor: Colors.redAccent,
           bottom: TabBar(tabs: [
             Tab(child: Text('Posts'),),
@@ -157,286 +185,509 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
         ),
         body: TabBarView(
           children: <Widget>[
-            FutureBuilder(
-              future: Future.wait([
-                getPostsListFromDatabase(),
-              ]),
-              builder: (context,res){
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(left: 10.0, top: 10.0),
+                    child: Text('Apply Filters to Improve Recommendations'),
+                  ),
+                  Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        PopupMenuButton<double>(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1.0,
+                              child: Text('< 1KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 5.0,
+                              child: Text('< 5KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 10.0,
+                              child: Text('< 10KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 50.0,
+                              child: Text('< 50KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 100.0,
+                              child: Text('< 100KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 500.0,
+                              child: Text('< 500KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 99999.0,
+                              child: Text('Any'),
+                            ),
+                          ],
+                          initialValue: post_radius,
+                          onSelected: (value) {
+                            setState(() {
+                              post_radius = value;
+                            });
 
-                if(!res.hasData){
-                  return Center(
-                      child: CircularProgressIndicator()
-                  );
-                }else{
+                            print("value:$value");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text('Distance', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                          ),
+                        ),
+                        PopupMenuButton<int>(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1,
+                              child: Text('> 1 Likes'),
+                            ),
+                            PopupMenuItem(
+                              value: 10,
+                              child: Text('> 10 Likes'),
+                            ),
+                            PopupMenuItem(
+                              value: 50,
+                              child: Text('> 50 Likes'),
+                            ),
+                            PopupMenuItem(
+                              value: 100,
+                              child: Text('> 100 Likes'),
+                            ),
+                            PopupMenuItem(
+                              value: 500,
+                              child: Text('> 500 Likes'),
+                            ),
+                            PopupMenuItem(
+                              value: 1000,
+                              child: Text('> 1000 Likes'),
+                            ),
+                            PopupMenuItem(
+                              value: 5000,
+                              child: Text('> 5000 Likes'),
+                            ),
+                            PopupMenuItem(
+                              value: 9999999,
+                              child: Text('Any'),
+                            ),
+                          ],
+                          initialValue: post_likes,
+                          onSelected: (value) {
+                            setState(() {
+                              post_likes = value;
+                            });
 
-                  postListMap = res.data[0];
+                            print("value:$value");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text('Likes', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: FutureBuilder(
+                      future: Future.wait([
+                        getPostsListFromDatabase(),
+                      ]),
+                      builder: (context,res){
 
-                  postListMap.removeWhere((element){
-                    // returns distance in KM
-                    double distance= calculateDistance(lat, long, element['lat'], element['long']);
-                    return (distance>10.0);
-                  });
+                        if(!res.hasData){
+                          return Center(
+                              child: CircularProgressIndicator()
+                          );
+                        }else{
 
-                  for(int i=0;i<postListMap.length;i++){
-                    postLikeMap.putIfAbsent(i, ()=> false);
-                  }
+                          postListMap = res.data[0];
+
+                          // distance filter
+                          postListMap.removeWhere((element){
+                            // returns distance in KM
+                            double distance= calculateDistance(lat, long, element['lat'], element['long']);
+                            return (distance> post_radius);
+                          });
+
+                          // likes filter
+                          postListMap.removeWhere((element){
+                            return ( element['likes'] < post_likes);
+                          });
+
+                          for(int i=0;i<postListMap.length;i++){
+                            postLikeMap.putIfAbsent(i, ()=> false);
+                          }
 
 
-                  print('postLikeMap: '+postLikeMap.toString());
-                  print('postListMap: '+postListMap.toString());
+                          print('postLikeMap: '+postLikeMap.toString());
+                          print('postListMap: '+postListMap.toString());
 
-                  int postCount = postListMap.length;
+                          int postCount = postListMap.length;
 
-                  if(postCount>0){
-                    return ListView.builder(
-                        itemCount: postCount,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index){
+                          if(postCount>0){
+                            return ListView.builder(
+                                itemCount: postCount,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index){
 
-                          if(postListMap[index]["description"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["location"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["title"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase())) {
+                                  if(postListMap[index]["description"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["location"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["title"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase())) {
 
-                            return GestureDetector(
-                              onTap: (){
-                                Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (context)=> ViewPostPage(postMap: postListMap[index], id: postKeyLists[index].toString(),))
-                                );
-                              },
-                              child: Card(
-                                elevation: 3,
-                                margin: EdgeInsets.all(10),
-                                child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  width: MediaQuery.of(context).size.width,
-                                  color: Colors.grey[000],
-                                  child: Container(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Hero(
-                                          tag: postKeyLists[index].toString(),
-                                          child: Container(width: screenWidth - 30,
-                                              height: 250,
-                                              padding: EdgeInsets.only(top: 3, bottom: 3),
-                                              child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.fill,)
+                                    return GestureDetector(
+                                      onTap: (){
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (context)=> ViewPostPage(postMap: postListMap[index], id: postKeyLists[index].toString(),))
+                                        );
+                                      },
+                                      child: Card(
+                                        elevation: 3,
+                                        margin: EdgeInsets.all(10),
+                                        child: Container(
+                                          padding: EdgeInsets.all(5),
+                                          width: MediaQuery.of(context).size.width,
+                                          color: Colors.grey[000],
+                                          child: Container(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Hero(
+                                                  tag: postKeyLists[index].toString(),
+                                                  child: Container(width: screenWidth - 30,
+                                                      height: 250,
+                                                      padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                      child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.fill,)
+                                                  ),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: <Widget>[
+                                                    Container(
+                                                        alignment: Alignment.topLeft,
+                                                        padding: EdgeInsets.all(5),
+                                                        child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                                    Container(
+                                                        alignment: Alignment.topRight,
+                                                        padding: EdgeInsets.all(5),
+                                                        child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                                  ],
+                                                ),
+                                                Container(
+                                                    padding: EdgeInsets.all(5),
+                                                    child: Text(postListMap[index]["title"], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), softWrap: true,)
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: <Widget>[
+                                                    Container(width: 160,
+                                                        alignment: Alignment.center,
+                                                        padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                        child: Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: <Widget>[
+                                                            IconButton(
+                                                              icon: Icon(postLikeMap[index]? Icons.favorite: Icons.favorite_border, color: Colors.red,),
+                                                              onPressed: () async {
+
+                                                                // like dislike
+
+                                                                setState(() {
+                                                                  postLikeMap.update(index, (v)=> !v);
+                                                                });
+
+                                                                Map<String, dynamic> likes_map = new Map();
+                                                                if(postLikeMap[index]){
+                                                                  likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']+1));
+                                                                }else{
+                                                                  likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']-1));
+                                                                }
+
+                                                                await Firestore.instance.collection('Posts').document(postKeyLists[index]).updateData(likes_map);
+
+                                                              },
+                                                            ),
+                                                            Text(postListMap[index]['likes'].toString()),
+                                                          ],
+                                                        )
+                                                    ),
+                                                    Container(width: 160,
+                                                        padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                        child: IconButton(
+                                                          icon: Icon(Icons.share),
+                                                          onPressed: () async {
+
+                                                            // share post
+
+                                                            http.Response response = await http.get(postListMap[index]['post_pic']);
+
+                                                            await Share.file(
+                                                              postListMap[index]['title'], 'esys.png', response.bodyBytes, '*/*',
+                                                              text: postListMap[index]['title'] +'\n\n'
+                                                                  + postListMap[index]['description'],
+                                                            );
+
+
+                                                          },
+                                                        )
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Container(
-                                                alignment: Alignment.topLeft,
-                                                padding: EdgeInsets.all(5),
-                                                child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
-                                            Container(
-                                                alignment: Alignment.topRight,
-                                                padding: EdgeInsets.all(5),
-                                                child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
-                                          ],
-                                        ),
-                                        Container(
-                                            padding: EdgeInsets.all(5),
-                                            child: Text(postListMap[index]["title"], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), softWrap: true,)
-                                        ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Container(width: 160,
-                                                alignment: Alignment.center,
-                                                padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    IconButton(
-                                                      icon: Icon(postLikeMap[index]? Icons.favorite: Icons.favorite_border, color: Colors.red,),
-                                                      onPressed: () async {
+                                      ),
+                                    );
+                                  }
+                                  else{
+                                    return Container();
+                                  }
 
-                                                        // like dislike
-
-                                                        setState(() {
-                                                          postLikeMap.update(index, (v)=> !v);
-                                                        });
-
-                                                        Map<String, dynamic> likes_map = new Map();
-                                                        if(postLikeMap[index]){
-                                                          likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']+1));
-                                                        }else{
-                                                          likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']-1));
-                                                        }
-
-                                                        await Firestore.instance.collection('Posts').document(postKeyLists[index]).updateData(likes_map);
-
-                                                      },
-                                                    ),
-                                                    Text(postListMap[index]['likes'].toString()),
-                                                  ],
-                                                )
-                                            ),
-                                            Container(width: 160,
-                                                padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                child: IconButton(
-                                                  icon: Icon(Icons.share),
-                                                  onPressed: () async {
-
-                                                    // share post
-
-                                                    http.Response response = await http.get(postListMap[index]['post_pic']);
-
-                                                    await Share.file(
-                                                      postListMap[index]['title'], 'esys.png', response.bodyBytes, '*/*',
-                                                      text: postListMap[index]['title'] +'\n\n'
-                                                          + postListMap[index]['description'],
-                                                    );
-
-
-                                                  },
-                                                )
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
+                                }
                             );
-                          }
-                          else{
-                            return Container();
+                          }else{
+                            return Center(child: Container(child: Text('No recommendation to show.'),),);
                           }
 
                         }
-                    );
-                  }else{
-                    return Center(child: Container(child: Text('No recommendation to show.'),),);
-                  }
 
-                }
-
-              },
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
-            FutureBuilder(
-              future: Future.wait([
-                getListsFromDatabase(),
-              ]),
-              builder: (context,res){
+            Container(
+              child: Column(
+//                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(left: 10.0, top: 10.0),
+                    child: Text('Apply Filters to Improve Recommendations'),
+                  ),
+                  Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                            PopupMenuButton<double>(
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 1.0,
+                                  child: Text('< 1KM'),
+                                ),
+                                PopupMenuItem(
+                                  value: 5.0,
+                                  child: Text('< 5KM'),
+                                ),
+                                PopupMenuItem(
+                                  value: 10.0,
+                                  child: Text('< 10KM'),
+                                ),
+                                PopupMenuItem(
+                                  value: 50.0,
+                                  child: Text('< 50KM'),
+                                ),
+                                PopupMenuItem(
+                                  value: 100.0,
+                                  child: Text('< 100KM'),
+                                ),
+                                PopupMenuItem(
+                                  value: 500.0,
+                                  child: Text('< 500KM'),
+                                ),
+                                PopupMenuItem(
+                                  value: 99999.0,
+                                  child: Text('Any'),
+                                ),
+                              ],
+                              initialValue: rest_radius,
+                              onSelected: (value) {
+                               setState(() {
+                                 rest_radius = value;
+                               });
 
-                if(!res.hasData){
-                  return Center(
-                      child: CircularProgressIndicator()
-                  );
-                }else{
-
-                  restaurantListMap = res.data[0];
-
-                  restaurantListMap.removeWhere((element){
-                    // returns distance in KM
-                    double distance= calculateDistance(lat, long, element['lat'], element['long']);
-                    return (distance>10.0);
-                  });
-
-                  print('restaurantRatingsListMap.toString(): '+restaurantRatingsListMap.toString());
-                  print('restaurantListMap.toString(): '+restaurantListMap.toString());
-
-                  int restaurantCount = restaurantListMap.length;
-
-                  if(restaurantCount>0){
-                    return ListView.builder(
-                        itemCount: restaurantCount,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index){
-
-                          if(restaurantListMap[index]["name"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase())) {
-                            return GestureDetector(
-                              onTap: (){
-
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                    ReadReviewsPage(rest_id: restaurantKeyLists[index], name: restaurantListMap[index]["name"], avg_rating: restaurantListMap[index]["avg_rating"], image: restaurantListMap[index]["image"])
-                                ));
-
+                                print("value:$value");
                               },
-                              child: Card(
-                                elevation: 3,
-                                margin: EdgeInsets.all(10),
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  width: MediaQuery.of(context).size.width,
-                                  color: Colors.grey[000],
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Container(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: <Widget>[
-                                                Container(width: screenWidth - 110,
-                                                    padding: EdgeInsets.all(5),
-                                                    child: Text(restaurantListMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                                Container(width: 45,
-                                                    alignment: Alignment.topRight,
-                                                    padding: EdgeInsets.all(5),
-                                                    child: Text(restaurantListMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                                Icon(Icons.star),
-                                              ],
-                                            ),
-                                            Container(width: screenWidth - 40,
-                                                height: 250,
-                                                padding: EdgeInsets.only(top: 6, bottom: 3),
-                                                child: Image.network(restaurantListMap[index]["image"], fit: BoxFit.fill,)),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: <Widget>[
-                                                Container(width: 160,
-                                                    padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                    child: FlatButton(
-                                                      child: Text("Write Review", style: TextStyle(color: Colors.blue),),
-                                                      onPressed: (){
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                child: Text('Distance', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                              ),
+                            ),
+                            PopupMenuButton<double>(
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 1.0,
+                                  child: Text('> 1 Star'),
+                                ),
+                                PopupMenuItem(
+                                  value: 2.0,
+                                  child: Text('> 2 Star'),
+                                ),
+                                PopupMenuItem(
+                                  value: 3.0,
+                                  child: Text('> 3 Star'),
+                                ),
+                                PopupMenuItem(
+                                  value: 4.0,
+                                  child: Text('> 4 Star'),
+                                ),
+                                PopupMenuItem(
+                                  value: 4.9,
+                                  child: Text('5 Star'),
+                                ),
+                              ],
+                              initialValue: rest_ratings,
+                              onSelected: (value) {
+                                setState(() {
+                                  rest_ratings = value;
+                                });
 
-                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index])));
+                                print("value:$value");
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                child: Text('Ratings', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                              ),
+                            ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: FutureBuilder(
+                      future: Future.wait([
+                        getListsFromDatabase(),
+                      ]),
+                      builder: (context,res){
 
-                                                      },
-                                                    )
+                        if(!res.hasData){
+                          return Center(
+                              child: CircularProgressIndicator()
+                          );
+                        }else{
+
+                          restaurantListMap = res.data[0];
+
+                          restaurantListMap.removeWhere((element){
+                            // returns distance in KM
+                            double distance= calculateDistance(lat, long, element['lat'], element['long']);
+                            return (distance> rest_radius);
+                          });
+
+                          restaurantListMap.removeWhere((element){
+                            return ( double.parse(element['avg_rating'])< rest_ratings );
+                          });
+
+                          print('restaurantRatingsListMap.toString(): '+restaurantRatingsListMap.toString());
+                          print('restaurantListMap.toString(): '+restaurantListMap.toString());
+
+                          int restaurantCount = restaurantListMap.length;
+
+                          if(restaurantCount>0){
+                            return ListView.builder(
+                                itemCount: restaurantCount,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index){
+
+                                  if(restaurantListMap[index]["name"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase())) {
+                                    return GestureDetector(
+                                      onTap: (){
+
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                            ReadReviewsPage(rest_id: restaurantKeyLists[index], name: restaurantListMap[index]["name"], avg_rating: restaurantListMap[index]["avg_rating"], image: restaurantListMap[index]["image"])
+                                        ));
+
+                                      },
+                                      child: Card(
+                                        elevation: 3,
+                                        margin: EdgeInsets.all(10),
+                                        child: Container(
+                                          padding: EdgeInsets.all(10),
+                                          width: MediaQuery.of(context).size.width,
+                                          color: Colors.grey[000],
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              Container(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: <Widget>[
+                                                        Container(width: screenWidth - 110,
+                                                            padding: EdgeInsets.all(5),
+                                                            child: Text(restaurantListMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                        Container(width: 45,
+                                                            alignment: Alignment.topRight,
+                                                            padding: EdgeInsets.all(5),
+                                                            child: Text(restaurantListMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                        Icon(Icons.star),
+                                                      ],
+                                                    ),
+                                                    Container(width: screenWidth - 40,
+                                                        height: 250,
+                                                        padding: EdgeInsets.only(top: 6, bottom: 3),
+                                                        child: Image.network(restaurantListMap[index]["image"], fit: BoxFit.fill,)),
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: <Widget>[
+                                                        Container(width: 160,
+                                                            padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                            child: FlatButton(
+                                                              child: Text("Write Review", style: TextStyle(color: Colors.blue),),
+                                                              onPressed: (){
+
+                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index])));
+
+                                                              },
+                                                            )
+                                                        ),
+                                                        Container(width: 160,
+                                                            padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                            child: FlatButton(
+                                                              child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
+                                                              onPressed: (){
+
+                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                                    ReadReviewsPage(rest_id: restaurantKeyLists[index], name: restaurantListMap[index]["name"], avg_rating: restaurantListMap[index]["avg_rating"], image: restaurantListMap[index]["image"])
+                                                                ));
+
+                                                              },
+                                                            )
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
-                                                Container(width: 160,
-                                                    padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                    child: FlatButton(
-                                                      child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
-                                                      onPressed: (){
-
-                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                            ReadReviewsPage(rest_id: restaurantKeyLists[index], name: restaurantListMap[index]["name"], avg_rating: restaurantListMap[index]["avg_rating"], image: restaurantListMap[index]["image"])
-                                                        ));
-
-                                                      },
-                                                    )
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                    );
+                                  }
+                                  else{
+                                    return Container();
+                                  }
+
+                                }
                             );
-                          }
-                          else{
-                            return Container();
+                          }else{
+                            return Center(child: Container(child: Text('No recommendation to show.'),),);
                           }
 
                         }
-                    );
-                  }else{
-                    return Center(child: Container(child: Text('No recommendation to show.'),),);
-                  }
 
-                }
-
-              },
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -468,26 +719,44 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
 
     templist = collectionSnapshot.documents;
 
-    list = templist.map((DocumentSnapshot docSnapshot){
-      restaurantKeyLists.add(docSnapshot.documentID);
+//    list = templist.map((DocumentSnapshot docSnapshot){
+//      restaurantKeyLists.add(docSnapshot.documentID);
+//
+//      return docSnapshot.data;
+//    }).toList();
 
-      return docSnapshot.data;
-    }).toList();
+    collectionSnapshot.documents.forEach((DocumentSnapshot documentSnapshot){
+      restaurantKeyLists.add(documentSnapshot.documentID);
+      list.add(documentSnapshot.data);
+      Firestore.instance.collection("Restaurants").document(documentSnapshot.documentID).collection('Reviews').getDocuments().then((QuerySnapshot querySnapshot){
+        List<DocumentSnapshot> ratingsSnapshotList = querySnapshot.documents;
 
-
-    for(int i=0; i < restaurantKeyLists.length ; i++){
-      Firestore.instance.collection("Restaurants").document(restaurantKeyLists[i]).collection('Ratings').getDocuments().then((QuerySnapshot querySnapshot){
-
-        List<DocumentSnapshot> ratingsTempList = querySnapshot.documents;
-
-        this.restaurantRatingsListMap = ratingsTempList.map((DocumentSnapshot docSnapshot){
-          return docSnapshot.data;
-        }).toList();
-
+//        this.restaurantRatingsListMap = ratingsTempList.map((DocumentSnapshot docSnapshot){
+//          return docSnapshot.data;
+//        }).toList();
+        ratingsSnapshotList.forEach((DocumentSnapshot documentSnapshot){
+          restaurantRatingsListMap.add(documentSnapshot.data);
+        });
       });
-    }
+
+    });
+
+
+//    for(int i=0; i < restaurantKeyLists.length ; i++){
+//      Firestore.instance.collection("Restaurants").document(restaurantKeyLists[i]).collection('Ratings').getDocuments().then((QuerySnapshot querySnapshot){
+//
+//        List<DocumentSnapshot> ratingsTempList = querySnapshot.documents;
+//
+//        this.restaurantRatingsListMap = ratingsTempList.map((DocumentSnapshot docSnapshot){
+//          return docSnapshot.data;
+//        }).toList();
+//
+//      });
+//    }
 
     return list;
   }
+
+
 
 }

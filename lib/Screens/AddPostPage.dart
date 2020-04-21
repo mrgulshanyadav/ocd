@@ -106,7 +106,7 @@ class _AddPostPageState extends State<AddPostPage> {
     List<Placemark> _placemark = await Geolocator().placemarkFromCoordinates(_lat, _long);
     setState(() {
       addresses = _placemark;
-      event_location = _placemark[0].locality ?? _placemark[0].administrativeArea?? _placemark[0].country?? 'NA';
+      event_location = addresses[0].name +', '+addresses[0].thoroughfare +', '+ _placemark[0].locality+', '+_placemark[0].administrativeArea+', '+_placemark[0].country ?? _placemark[0].administrativeArea?? _placemark[0].country?? 'NA';
       _textEditingController.text = event_location;
     });
     print('event_location: '+event_location);

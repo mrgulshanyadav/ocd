@@ -1,9 +1,12 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:ocd/Screens/AnalysisPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AddPostPage.dart';
 import 'ViewPostPage.dart';
@@ -72,7 +75,25 @@ class _HomePageState extends State<HomePage> {
     });
 
   }
+  
+  addVisitDateToFirebase() async {
+    user = await FirebaseAuth.instance.currentUser();
 
+    var formatter = new DateFormat('dd-MM-yyyy');
+    String current_date = formatter.format(new DateTime.now());
+
+    Map login_recordMap = new Map();
+    login_recordMap.putIfAbsent((current_date), ()=> true);
+
+    Firestore.instance.collection('Users').document(user.uid).setData(
+        {
+          'login_record': login_recordMap
+        },
+        merge: true
+    ).whenComplete((){
+      print('visit date added to firestore');
+    });
+  }
 
   @override
   void initState() {
@@ -83,6 +104,7 @@ class _HomePageState extends State<HomePage> {
 
     likeMap = new Map();
 
+    addVisitDateToFirebase();
     getUserLocation();
 
     super.initState();
@@ -101,6 +123,51 @@ class _HomePageState extends State<HomePage> {
         onPressed: (){
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddPostPage()));
         },
+      ),
+      appBar: AppBar(),
+      drawer: Drawer(
+        elevation: 4,
+        child: ListView(
+          children: <Widget>[
+            Container(
+              height: 150,
+              padding: EdgeInsets.all(10),
+              color: Colors.red[600],
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 52,
+                      backgroundColor: Colors.white,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child: Text('Username', style: TextStyle(color: Colors.white),),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Analysis'),
+              onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AnalysisPage()));
+              },
+            ),
+            ListTile(
+              title: Text('Collab as Blogger'),
+              onTap: (){
+
+              },
+            ),
+            ListTile(
+              title: Text('About us'),
+              onTap: (){
+
+              },
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Column(
