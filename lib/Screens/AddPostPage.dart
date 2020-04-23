@@ -106,8 +106,8 @@ class _AddPostPageState extends State<AddPostPage> {
     List<Placemark> _placemark = await Geolocator().placemarkFromCoordinates(_lat, _long);
     setState(() {
       addresses = _placemark;
-      event_location = addresses[0].name +', '+addresses[0].thoroughfare +', '+ _placemark[0].locality+', '+_placemark[0].administrativeArea+', '+_placemark[0].country ?? _placemark[0].administrativeArea?? _placemark[0].country?? 'NA';
-      _textEditingController.text = event_location;
+      event_location = _placemark[0].locality+', '+_placemark[0].administrativeArea+', '+_placemark[0].country ?? _placemark[0].administrativeArea?? _placemark[0].country?? 'NA';
+      _textEditingController.text = addresses[0].name +', '+addresses[0].thoroughfare +', '+ _placemark[0].locality+', '+_placemark[0].administrativeArea+', '+_placemark[0].country ?? _placemark[0].administrativeArea?? _placemark[0].country?? 'NA';
     });
     print('event_location: '+event_location);
     print('Address: '+ _placemark[0].name +', '+ _placemark[0].administrativeArea+', '+ _placemark[0].locality + ', '+ _placemark[0].subLocality+', '
@@ -330,6 +330,7 @@ class _AddPostPageState extends State<AddPostPage> {
                           listMap.putIfAbsent("post_pic", ()=> post_pic_url);
                           listMap.putIfAbsent("posted_by", ()=> user.uid);
                           listMap.putIfAbsent("post_date", ()=> DateTime.now().day.toString()+'-'+DateTime.now().month.toString()+'-'+DateTime.now().year.toString());
+                          listMap.putIfAbsent("like_map", ()=> {user.uid: false});
                           listMap.putIfAbsent("lat", ()=> lat);
                           listMap.putIfAbsent("long", ()=> long);
 

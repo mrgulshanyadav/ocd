@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ViewPostPage extends StatefulWidget {
   Map<String, dynamic> postMap;
+  bool isLiked;
+  int likeCounter;
   String id;
 
-  ViewPostPage({this.postMap, this.id});
+  ViewPostPage({this.postMap, this.id, this.isLiked, this.likeCounter});
 
   @override
   _ViewPostPageState createState() => _ViewPostPageState();
@@ -15,14 +18,17 @@ class ViewPostPage extends StatefulWidget {
 
 class _ViewPostPageState extends State<ViewPostPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+  FirebaseUser user;
 
   bool isLiked;
+  int likeCounter;
 
   @override
   void initState() {
 
     // change initial value to coming from homepage
-    isLiked = false;
+    isLiked = widget.isLiked;
+    likeCounter = widget.likeCounter;
 
     super.initState();
   }
@@ -58,14 +64,18 @@ class _ViewPostPageState extends State<ViewPostPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Container(
-                              alignment: Alignment.topLeft,
-                              padding: EdgeInsets.all(5),
-                              child: Text(widget.postMap["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
-                          Container(
-                              alignment: Alignment.topRight,
-                              padding: EdgeInsets.all(5),
-                              child: Text(widget.postMap["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                          Flexible(
+                            child: Container(
+                                alignment: Alignment.topLeft,
+                                padding: EdgeInsets.all(5),
+                                child: Text(widget.postMap["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                          ),
+                          Flexible(
+                            child: Container(
+                                alignment: Alignment.topRight,
+                                padding: EdgeInsets.all(5),
+                                child: Text(widget.postMap["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                          ),
                         ],
                       ),
                     ),
@@ -103,24 +113,29 @@ class _ViewPostPageState extends State<ViewPostPage> {
                                         isLiked = !isLiked;
                                       });
 
-                                      Map<String, dynamic> likes_map = new Map();
+                                      user = await FirebaseAuth.instance.currentUser();
+
+                                      Map<String, bool> like_map = new Map();
                                       if(isLiked){
-                                        likes_map.putIfAbsent("likes", ()=> (widget.postMap['likes']+1));
-                                        setState(() {
-                                          widget.postMap['likes'] = widget.postMap['likes']+1;
-                                        });
+                                        like_map.putIfAbsent(user.uid, ()=> true);
+                                        likeCounter++;
                                       }else{
-                                        likes_map.putIfAbsent("likes", ()=> (widget.postMap['likes']-1));
-                                        setState(() {
-                                          widget.postMap['likes'] = widget.postMap['likes']-1;
-                                        });
+                                        like_map.putIfAbsent(user.uid, ()=> false);
+                                        likeCounter--;
                                       }
 
-                                      await Firestore.instance.collection('Posts').document(widget.id).updateData(likes_map);
+                                      await Firestore.instance.collection('Posts').document(widget.id).setData(
+                                          {
+                                            'like_map': like_map
+                                          },
+                                          merge: true
+                                      ).whenComplete(() {
+                                        print('like/dislike added to firestore');
+                                      });
 
                                     },
                                   ),
-                                  Text(widget.postMap['likes'].toString()), // refresh this counter
+                                  Text(likeCounter.toString()), // refresh this counter
                                 ],
                               )
                           ),

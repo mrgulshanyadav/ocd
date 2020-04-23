@@ -174,6 +174,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_multiselect:
+    dependency: "direct main"
+    description:
+      name: flutter_multiselect
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -469,6 +476,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  webview_flutter:
+    dependency: "direct main"
+    description:
+      name: webview_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.20+2"
   xml:
     dependency: transitive
     description:

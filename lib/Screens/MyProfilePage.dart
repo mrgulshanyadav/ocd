@@ -95,6 +95,36 @@ class _MyProfilePageState extends State<MyProfilePage> {
                             )
                         ),
                         Container(
+                            width: screenWidth-10,
+                            padding: EdgeInsets.all(10),
+                            child: Row(
+                              children: <Widget>[
+                                Flexible(
+                                    child: Text(
+                                      'Favorites: ',
+                                      style: TextStyle(fontSize: 20, color: Colors.grey[700]),
+                                      textAlign: TextAlign.center,
+                                      softWrap: true,
+                                    )
+                                ),
+                                Flexible(
+                                    child: Container(
+                                      color: Colors.black12,
+                                      alignment: Alignment.center,
+                                      padding: EdgeInsets.all(5),
+                                      width: 900,
+                                      height: 145,
+                                      child: Text(
+                                        userMap['fav_cuisines'].toString().replaceAll('[', '').replaceAll(']', ''),
+                                        style: TextStyle(fontSize: 16, wordSpacing: 2.0),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )
+                                ),
+                              ],
+                            )
+                        ),
+                        Container(
                           margin: EdgeInsets.all(10),
                           child: RaisedButton(
                             child: Text("Logout", style: TextStyle(color: Colors.white),),

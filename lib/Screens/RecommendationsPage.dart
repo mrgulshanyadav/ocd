@@ -24,9 +24,11 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
   List<Map<String,dynamic>> postListMap;
   List postKeyLists;
 
-  List<String> recommendation_textList;
+  List<dynamic> recommendation_textList;
+  Map<String, dynamic> userMap;
 
   Map<int, bool> postLikeMap;
+  Map<int, int> postLikeCounterMap;
 
   List<Map<dynamic,dynamic>> restaurantListMap;
   List<Map<String,dynamic>> restaurantRatingsListMap;
@@ -126,27 +128,33 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     long = 0.0;
     addresses = new List();
 
+    // filters
+    // restaurant filter
     rest_radius = 10.0;
     rest_ratings = 4.0;
 
+    // post filter
     post_radius = 10.0;
     post_likes = 0;
+
+    // recommendations
+    // cuisines based
+    userMap = new Map();
+    recommendation_textList = new List();
+    recommendation_textList.add('');
 
     getLocationDataFromSharedPreferences().whenComplete((){
       getUserLocation();
     });
 
-    recommendation_textList = new List();
-
     postListMap = new List();
     postKeyLists = new List();
     postLikeMap = new Map();
+    postLikeCounterMap = new Map();
 
     restaurantListMap = new List();
     restaurantRatingsListMap = new List();
     restaurantKeyLists = new List();
-
-    recommendation_textList.add('');
 
     super.initState();
   }
@@ -306,6 +314,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                         }else{
 
                           postListMap = res.data[0];
+                          recommendation_textList.addAll(userMap['fav_cuisines']);
 
                           // distance filter
                           postListMap.removeWhere((element){
@@ -314,17 +323,17 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                             return (distance> post_radius);
                           });
 
-                          // likes filter
-                          postListMap.removeWhere((element){
-                            return ( element['likes'] < post_likes);
-                          });
+//                          // likes filter
+//                          postListMap.removeWhere((element){
+//                            return ( element['likes'] < post_likes);
+//                          });
 
                           for(int i=0;i<postListMap.length;i++){
                             postLikeMap.putIfAbsent(i, ()=> false);
                           }
 
-
                           print('postLikeMap: '+postLikeMap.toString());
+                          print('recommendation_textList: '+recommendation_textList.toString());
                           print('postListMap: '+postListMap.toString());
 
                           int postCount = postListMap.length;
@@ -335,113 +344,156 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                 shrinkWrap: true,
                                 itemBuilder: (context, index){
 
-                                  if(postListMap[index]["description"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["location"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["title"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase())) {
+                                  Map like_map = postListMap[index]['like_map'];
+                                  like_map.forEach((k,v){
+                                    if(k==user.uid){
+                                      if(v==true){
+                                        postLikeMap.update(index, (v)=> true);
+                                      }else{
+                                        postLikeMap.update(index, (v)=> false);
+                                      }
+                                    }
+                                  });
 
-                                    return GestureDetector(
-                                      onTap: (){
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (context)=> ViewPostPage(postMap: postListMap[index], id: postKeyLists[index].toString(),))
-                                        );
-                                      },
-                                      child: Card(
-                                        elevation: 3,
-                                        margin: EdgeInsets.all(10),
-                                        child: Container(
-                                          padding: EdgeInsets.all(5),
-                                          width: MediaQuery.of(context).size.width,
-                                          color: Colors.grey[000],
+                                  Map likeCounter_map = postListMap[index]['like_map'];
+                                  postLikeCounterMap[index] = 0;
+                                  likeCounter_map.forEach((k,v){
+                                    if(v==true){
+                                      postLikeCounterMap[index]++;
+                                    }
+                                  });
+
+                                  if(postLikeCounterMap[index] > post_likes){
+                                    if(postListMap[index]["description"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["location"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase()) || postListMap[index]["title"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase())) {
+                                      return GestureDetector(
+                                        onTap: (){
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context)=>
+                                                      ViewPostPage(
+                                                        postMap: postListMap[index],
+                                                        id: postKeyLists[index].toString(),
+                                                        isLiked: postLikeMap[index],
+                                                        likeCounter: postLikeCounterMap[index],
+                                                      ))
+                                          );
+                                        },
+                                        child: Card(
+                                          elevation: 3,
+                                          margin: EdgeInsets.all(10),
                                           child: Container(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Hero(
-                                                  tag: postKeyLists[index].toString(),
-                                                  child: Container(width: screenWidth - 30,
-                                                      height: 250,
-                                                      padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                      child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.fill,)
+                                            padding: EdgeInsets.all(5),
+                                            width: MediaQuery.of(context).size.width,
+                                            color: Colors.grey[000],
+                                            child: Container(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Hero(
+                                                    tag: postKeyLists[index].toString(),
+                                                    child: Container(width: screenWidth - 30,
+                                                        height: 250,
+                                                        padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                        child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.fill,)
+                                                    ),
                                                   ),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: <Widget>[
-                                                    Container(
-                                                        alignment: Alignment.topLeft,
-                                                        padding: EdgeInsets.all(5),
-                                                        child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
-                                                    Container(
-                                                        alignment: Alignment.topRight,
-                                                        padding: EdgeInsets.all(5),
-                                                        child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
-                                                  ],
-                                                ),
-                                                Container(
-                                                    padding: EdgeInsets.all(5),
-                                                    child: Text(postListMap[index]["title"], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), softWrap: true,)
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: <Widget>[
-                                                    Container(width: 160,
-                                                        alignment: Alignment.center,
-                                                        padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                        child: Row(
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: <Widget>[
-                                                            IconButton(
-                                                              icon: Icon(postLikeMap[index]? Icons.favorite: Icons.favorite_border, color: Colors.red,),
-                                                              onPressed: () async {
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: <Widget>[
+                                                      Flexible(
+                                                        child: Container(
+                                                            alignment: Alignment.topLeft,
+                                                            padding: EdgeInsets.all(5),
+                                                            child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                                      ),
+                                                      Flexible(
+                                                        child: Container(
+                                                            alignment: Alignment.topRight,
+                                                            padding: EdgeInsets.all(5),
+                                                            child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                      padding: EdgeInsets.all(5),
+                                                      child: Text(postListMap[index]["title"], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), softWrap: true,)
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: <Widget>[
+                                                      Container(width: 160,
+                                                          alignment: Alignment.center,
+                                                          padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                          child: Row(
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: <Widget>[
+                                                              IconButton(
+                                                                icon: Icon(postLikeMap[index]? Icons.favorite: Icons.favorite_border, color: Colors.red,),
+                                                                onPressed: () async {
 
-                                                                // like dislike
+                                                                  // like dislike
 
-                                                                setState(() {
-                                                                  postLikeMap.update(index, (v)=> !v);
-                                                                });
+                                                                  setState(() {
+                                                                    postLikeMap.update(index, (v)=> !v);
+                                                                  });
 
-                                                                Map<String, dynamic> likes_map = new Map();
-                                                                if(postLikeMap[index]){
-                                                                  likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']+1));
-                                                                }else{
-                                                                  likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']-1));
-                                                                }
+                                                                  Map<String, bool> like_map = new Map();
+                                                                  if(postLikeMap[index]){
+                                                                    like_map.putIfAbsent(user.uid, ()=> true);
+                                                                    postLikeCounterMap[index]++;
+                                                                  }else{
+                                                                    like_map.putIfAbsent(user.uid, ()=> false);
+                                                                    postLikeCounterMap[index]--;
+                                                                  }
 
-                                                                await Firestore.instance.collection('Posts').document(postKeyLists[index]).updateData(likes_map);
+                                                                  await Firestore.instance.collection('Posts').document(postKeyLists[index]).setData(
+                                                                      {
+                                                                        'like_map': like_map
+                                                                      },
+                                                                      merge: true
+                                                                  ).whenComplete(() {
+                                                                    print('like/dislike added to firestore');
+                                                                  });
 
-                                                              },
-                                                            ),
-                                                            Text(postListMap[index]['likes'].toString()),
-                                                          ],
-                                                        )
-                                                    ),
-                                                    Container(width: 160,
-                                                        padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                        child: IconButton(
-                                                          icon: Icon(Icons.share),
-                                                          onPressed: () async {
+                                                                },
+                                                              ),
+                                                              Text(postLikeCounterMap[index].toString()),
+                                                            ],
+                                                          )
+                                                      ),
+                                                      Container(width: 160,
+                                                          padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                          child: IconButton(
+                                                            icon: Icon(Icons.share),
+                                                            onPressed: () async {
 
-                                                            // share post
+                                                              // share post
 
-                                                            http.Response response = await http.get(postListMap[index]['post_pic']);
+                                                              http.Response response = await http.get(postListMap[index]['post_pic']);
 
-                                                            await Share.file(
-                                                              postListMap[index]['title'], 'esys.png', response.bodyBytes, '*/*',
-                                                              text: postListMap[index]['title'] +'\n\n'
-                                                                  + postListMap[index]['description'],
-                                                            );
+                                                              await Share.file(
+                                                                postListMap[index]['title'], 'esys.png', response.bodyBytes, '*/*',
+                                                                text: postListMap[index]['title'] +'\n\n'
+                                                                    + postListMap[index]['description'],
+                                                              );
 
 
-                                                          },
-                                                        )
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                                                            },
+                                                          )
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    }
+                                    else{
+                                      return Container();
+                                    }
                                   }
                                   else{
                                     return Container();
@@ -593,7 +645,10 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                 shrinkWrap: true,
                                 itemBuilder: (context, index){
 
-                                  if(restaurantListMap[index]["name"].toString().toLowerCase().contains(recommendation_textList[0].toLowerCase())) {
+                                  // check if cuisines of restaurants have any intersection item with user's favourite cuisines
+                                  if(
+                                    restaurantListMap[index]["cuisines"].toSet().intersection(recommendation_textList.toSet()).length > 0
+                                  ) {
                                     return GestureDetector(
                                       onTap: (){
 
@@ -633,6 +688,13 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                         height: 250,
                                                         padding: EdgeInsets.only(top: 6, bottom: 3),
                                                         child: Image.network(restaurantListMap[index]["image"], fit: BoxFit.fill,)),
+                                                    Container(
+                                                      width: screenWidth-40,
+                                                        child: Text(
+                                                            'Cuisines: '+ restaurantListMap[index]["cuisines"].toString().replaceAll('[', '').replaceAll(']', ''),
+                                                          softWrap: true,
+                                                        ),
+                                                    ),
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
@@ -697,6 +759,11 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
 
   Future<dynamic> getPostsListFromDatabase() async {
     user = await FirebaseAuth.instance.currentUser();
+
+    DocumentSnapshot documentSnapshot = await Firestore.instance.collection("Users").document(user.uid).get();
+
+    userMap.addAll(documentSnapshot.data);
+
     QuerySnapshot collectionSnapshot = await Firestore.instance.collection("Posts").getDocuments();
     List<DocumentSnapshot> templist;
     List<Map<dynamic, dynamic>> list = new List();
@@ -711,19 +778,21 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     return list;
   }
 
+  Future<dynamic> getUserFavorites() async {
+    await Firestore.instance.collection("Users").document(user.uid).get().then((DocumentSnapshot snapshot){
+      recommendation_textList.addAll(snapshot.data["fav_cuisines"]);
+
+      print('user_data: '+snapshot.data["fav_cuisines"].toString());
+
+      return snapshot.data["fav_cuisines"];
+    });
+  }
+
   Future<dynamic> getListsFromDatabase() async {
     user = await FirebaseAuth.instance.currentUser();
+
     QuerySnapshot collectionSnapshot = await Firestore.instance.collection("Restaurants").getDocuments();
-    List<DocumentSnapshot> templist;
     List<Map<dynamic, dynamic>> list = new List();
-
-    templist = collectionSnapshot.documents;
-
-//    list = templist.map((DocumentSnapshot docSnapshot){
-//      restaurantKeyLists.add(docSnapshot.documentID);
-//
-//      return docSnapshot.data;
-//    }).toList();
 
     collectionSnapshot.documents.forEach((DocumentSnapshot documentSnapshot){
       restaurantKeyLists.add(documentSnapshot.documentID);
@@ -731,10 +800,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
       Firestore.instance.collection("Restaurants").document(documentSnapshot.documentID).collection('Reviews').getDocuments().then((QuerySnapshot querySnapshot){
         List<DocumentSnapshot> ratingsSnapshotList = querySnapshot.documents;
 
-//        this.restaurantRatingsListMap = ratingsTempList.map((DocumentSnapshot docSnapshot){
-//          return docSnapshot.data;
-//        }).toList();
-        ratingsSnapshotList.forEach((DocumentSnapshot documentSnapshot){
+         ratingsSnapshotList.forEach((DocumentSnapshot documentSnapshot){
           restaurantRatingsListMap.add(documentSnapshot.data);
         });
       });
@@ -742,21 +808,8 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     });
 
 
-//    for(int i=0; i < restaurantKeyLists.length ; i++){
-//      Firestore.instance.collection("Restaurants").document(restaurantKeyLists[i]).collection('Ratings').getDocuments().then((QuerySnapshot querySnapshot){
-//
-//        List<DocumentSnapshot> ratingsTempList = querySnapshot.documents;
-//
-//        this.restaurantRatingsListMap = ratingsTempList.map((DocumentSnapshot docSnapshot){
-//          return docSnapshot.data;
-//        }).toList();
-//
-//      });
-//    }
-
     return list;
   }
-
 
 
 }

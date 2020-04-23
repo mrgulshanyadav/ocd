@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_multiselect/flutter_multiselect.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocd/Screens/ForgetPassword.dart';
 import 'package:ocd/Screens/Login.dart';
@@ -96,6 +98,22 @@ class _RegisterState extends State<Register> {
 
   bool isLoading;
 
+  List<dynamic> favCuisinesList;
+  List<String> cuisinesList = [
+    "South Indian",
+    "North Indian",
+    "Chinese",
+    "Italian",
+    "Thai",
+    "Japanese",
+    "American",
+    "Vegetarian",
+    "Non Vegetarian",
+    "Sweets",
+    "Deserts",
+    "Drinks",
+  ];
+
   @override
   void initState() {
 
@@ -106,6 +124,8 @@ class _RegisterState extends State<Register> {
     mobile = '';
     password = '';
     confirm_password = '';
+
+    favCuisinesList = new List();
 
     super.initState();
   }
@@ -248,7 +268,97 @@ class _RegisterState extends State<Register> {
                       },
                     ),
                   ),
+//                  MultiSelect(
+//                      autovalidate: false,
+//                      titleText: 'Select your favorite cuisines',
+//                      errorText: 'Please select one or more option(s)',
+//                      dataSource: [
+//                        {
+//                          "display": "South Indian",
+//                          "value": 'South Indian',
+//                        },
+//                        {
+//                          "display": "North Indian",
+//                          "value": 'North Indian',
+//                        },
+//                        {
+//                          "display": "Chinese",
+//                          "value": 'Chinese',
+//                        },
+//                        {
+//                          "display": "Italian",
+//                          "value": 'Italian',
+//                        },
+//                        {
+//                          "display": "Thai",
+//                          "value": 'Thai',
+//                        },
+//                        {
+//                          "display": "American",
+//                          "value": 'American',
+//                        },
+//                        {
+//                          "display": "Japanese",
+//                          "value": 'Japanese',
+//                        },
+//                        {
+//                          "display": "Mexican",
+//                          "value": 'Mexican',
+//                        },
+//                        {
+//                          "display": "Vegeterian",
+//                          "value": 'Vegeterian',
+//                        },
+//                        {
+//                          "display": "Non Vegeterian",
+//                          "value": 'Non Vegeterian',
+//                        },
+//                        {
+//                          "display": "Sweet",
+//                          "value": 'Sweet',
+//                        },
+//                      ],
+//                      textField: 'display',
+//                      valueField: 'value',
+//                      filterable: true,
+//                      required: true,
+//                      onSaved: (value) {
+//                        print('selected values $value');
+//
+//                        favCuisinesList = value;
+//
+//                      },
+//                  ),
                   Container(
+                    padding: EdgeInsets.all(5),
+                    margin: EdgeInsets.all(10),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.redAccent,
+                        width: 2
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        RaisedButton(
+                          child: Text("Select your favorite cuisines"),
+                          onPressed: () => _showSelectFavoriteCuisinesDialog(),
+                        ),
+//                        Container(
+//                          padding: EdgeInsets.all(10),
+//                          alignment: Alignment.topLeft,
+//                          child: Text("Selected Cuisines: ", style: TextStyle(color: Colors.redAccent),),
+//                        ),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text(favCuisinesList.join(" , "), textAlign: TextAlign.center,),
+                        ),
+                      ],
+                    ),
+                  ),                  Container(
                     padding: EdgeInsets.all(10),
                     child: !isLoading? RaisedButton(
                       child: Text("Register",style: TextStyle(color: Colors.white),),
@@ -265,6 +375,8 @@ class _RegisterState extends State<Register> {
                           _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Select Profile Picture!')));
                         }else if(mobile.isEmpty){
                           _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Enter Mobile!')));
+                        }else if(favCuisinesList.isEmpty){
+                          _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Select favorite cuisines!')));
                         }else if(password.isEmpty){
                           _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Enter Password!')));
                         } else if(confirm_password.isEmpty){
@@ -308,6 +420,7 @@ class _RegisterState extends State<Register> {
                                 userMap.putIfAbsent("email", ()=> email);
                                 userMap.putIfAbsent("mobile", ()=> mobile);
                                 userMap.putIfAbsent("profile_pic", ()=> profile_url);
+                                userMap.putIfAbsent("fav_cuisines", ()=> favCuisinesList);
 
                                 Firestore.instance.collection("Users").document(value.user.uid).setData(userMap).whenComplete(() async {
                                   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Registered!')));
@@ -441,5 +554,77 @@ class _RegisterState extends State<Register> {
 
   }
 
+
+  _showSelectFavoriteCuisinesDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          //Here we will build the content of the dialog
+          return AlertDialog(
+            title: Text("Select favorite cuisines"),
+            content: MultiSelectChip(
+                cuisinesList,
+              onSelectionChanged: (selectedList) {
+                setState(() {
+                  favCuisinesList = selectedList;
+                });
+              },
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Done"),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          );
+        });
+  }
 }
 
+
+
+
+class MultiSelectChip extends StatefulWidget {
+  final List<String> reportList;
+  final Function(List<String>) onSelectionChanged; // +added
+
+  MultiSelectChip(
+      this.reportList,
+      {this.onSelectionChanged} // +added
+      );
+  @override
+  _MultiSelectChipState createState() => _MultiSelectChipState();
+}
+
+class _MultiSelectChipState extends State<MultiSelectChip> {
+// String selectedChoice = "";
+  List<String> selectedChoices = List();
+  // this function will build and return the choice list
+  _buildChoiceList() {
+    List<Widget> choices = List();
+      widget.reportList.forEach((item) {
+        choices.add(Container(
+          padding: const EdgeInsets.all(2.0),
+          child: ChoiceChip(
+            label: Text(item),
+            selected: selectedChoices.contains(item),
+            onSelected: (selected) {
+              setState(() {
+                selectedChoices.contains(item)
+                    ? selectedChoices.remove(item)
+                    : selectedChoices.add(item);
+                widget.onSelectionChanged(selectedChoices); // +added
+              });
+            },
+          ),
+        ));
+      });
+      return choices;
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      children: _buildChoiceList(),
+    );
+  }
+}

@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:ocd/Screens/AboutUs.dart';
 import 'package:ocd/Screens/AnalysisPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AddPostPage.dart';
 import 'ViewPostPage.dart';
+import 'CollabAsBlogger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -28,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   String search_text;
 
   Map<int, bool> likeMap;
+  Map<int, int> likeCounterMap;
 
   // get User location
 
@@ -36,6 +39,8 @@ class _HomePageState extends State<HomePage> {
   bool _serviceEnabled;
   PermissionStatus _permissionGranted;
   LocationData _locationData;
+
+  String user_name, image_url;
 
   Future<void> getUserLocation() async {
     _serviceEnabled = await location.serviceEnabled();
@@ -76,8 +81,15 @@ class _HomePageState extends State<HomePage> {
 
   }
   
-  addVisitDateToFirebase() async {
+  Future<void> addVisitDateToFirebase() async {
     user = await FirebaseAuth.instance.currentUser();
+
+    await Firestore.instance.collection("Users").document(user.uid).get().then((DocumentSnapshot snapshot) async {
+      setState(() {
+        user_name = snapshot.data['name'];
+        image_url = snapshot.data['profile_pic'];
+      });
+    });
 
     var formatter = new DateFormat('dd-MM-yyyy');
     String current_date = formatter.format(new DateTime.now());
@@ -103,6 +115,10 @@ class _HomePageState extends State<HomePage> {
     keyLists = new List();
 
     likeMap = new Map();
+    likeCounterMap = new Map();
+
+    user_name ='';
+    image_url = '';
 
     addVisitDateToFirebase();
     getUserLocation();
@@ -139,10 +155,11 @@ class _HomePageState extends State<HomePage> {
                     CircleAvatar(
                       radius: 52,
                       backgroundColor: Colors.white,
+                      backgroundImage: NetworkImage(image_url??'http://google.com'),
                     ),
                     Container(
                       padding: EdgeInsets.all(5),
-                      child: Text('Username', style: TextStyle(color: Colors.white),),
+                      child: Text(user_name??'', style: TextStyle(color: Colors.white),),
                     )
                   ],
                 ),
@@ -157,13 +174,13 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               title: Text('Collab as Blogger'),
               onTap: (){
-
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CollabAsBlogger()));
               },
             ),
             ListTile(
               title: Text('About us'),
               onTap: (){
-
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AboutUs()));
               },
             ),
           ],
@@ -191,19 +208,22 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             FutureBuilder(
-              future: getPostsListFromDatabase(),
+              future: Future.wait([
+                getPostsListFromDatabase(),
+                addVisitDateToFirebase()]),
               builder: (context,res){
-
-                postListMap = res.data;
 
                 if(!res.hasData){
                   return Center(
                       child: CircularProgressIndicator()
                   );
-                }else{
+                }else {
+
+                  postListMap = res.data[0];
 
                   for(int i=0;i<postListMap.length;i++){
                     likeMap.putIfAbsent(i, ()=> false);
+                    likeCounterMap.putIfAbsent(i, ()=> 0);
                   }
 
                   print('likeMap: '+likeMap.toString());
@@ -212,14 +232,41 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.builder(
                         itemCount: postListMap.length,
                         shrinkWrap: true,
-                        itemBuilder: (context, index){
+                        itemBuilder: (context, index) {
+
+                          Map like_map = postListMap[index]['like_map'];
+                          like_map.forEach((k,v){
+                            if(k==user.uid){
+                              if(v==true){
+                                likeMap.update(index, (v)=> true);
+                              }else{
+                                likeMap.update(index, (v)=> false);
+                              }
+                            }
+                          });
+
+                          Map likeCounter_map = postListMap[index]['like_map'];
+                          likeCounterMap[index] = 0;
+                          likeCounter_map.forEach((k,v){
+                            if(v==true){
+                              likeCounterMap[index]++;
+                            }
+                          });
 
                           if(postListMap[index]["description"].toString().toLowerCase().contains(search_text.toLowerCase()) || postListMap[index]["location"].toString().toLowerCase().contains(search_text.toLowerCase()) || postListMap[index]["title"].toString().toLowerCase().contains(search_text.toLowerCase())) {
 
                             return GestureDetector(
                               onTap: (){
                                 Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (context)=> ViewPostPage(postMap: postListMap[index], id: keyLists[index].toString(),))
+                                    MaterialPageRoute(
+                                        builder: (context)=>
+                                            ViewPostPage(
+                                              postMap: postListMap[index],
+                                              id: keyLists[index].toString(),
+                                              isLiked: likeMap[index],
+                                              likeCounter: likeCounterMap[index],
+                                            )
+                                    )
                                 );
                               },
                               child: Card(
@@ -244,14 +291,18 @@ class _HomePageState extends State<HomePage> {
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: <Widget>[
-                                            Container(
-                                                alignment: Alignment.topLeft,
-                                                padding: EdgeInsets.all(5),
-                                                child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
-                                            Container(
-                                                alignment: Alignment.topRight,
-                                                padding: EdgeInsets.all(5),
-                                                child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                            Flexible(
+                                              child: Container(
+                                                  alignment: Alignment.topLeft,
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Text(postListMap[index]["location"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                            ),
+                                            Flexible(
+                                              child: Container(
+                                                  alignment: Alignment.topRight,
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Text(postListMap[index]["post_date"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                            ),
                                           ],
                                         ),
                                         Container(
@@ -272,24 +323,38 @@ class _HomePageState extends State<HomePage> {
                                                       icon: Icon(likeMap[index]? Icons.favorite: Icons.favorite_border, color: Colors.red,),
                                                       onPressed: () async {
 
-                                                        // like dislike
-
                                                         setState(() {
                                                           likeMap.update(index, (v)=> !v);
                                                         });
 
-                                                        Map<String, dynamic> likes_map = new Map();
+//                                                        Map<String, dynamic> likes_map = new Map();
+//                                                        if(likeMap[index]){
+//                                                          likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']+1));
+//                                                        }else{
+//                                                          likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']-1));
+//                                                        }
+
+                                                        Map<String, bool> like_map = new Map();
                                                         if(likeMap[index]){
-                                                          likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']+1));
+                                                          like_map.putIfAbsent(user.uid, ()=> true);
+                                                          likeCounterMap[index]++;
                                                         }else{
-                                                          likes_map.putIfAbsent("likes", ()=> (postListMap[index]['likes']-1));
+                                                          like_map.putIfAbsent(user.uid, ()=> false);
+                                                          likeCounterMap[index]--;
                                                         }
 
-                                                        await Firestore.instance.collection('Posts').document(keyLists[index]).updateData(likes_map);
+                                                        await Firestore.instance.collection('Posts').document(keyLists[index]).setData(
+                                                            {
+                                                              'like_map': like_map
+                                                            },
+                                                            merge: true
+                                                        ).whenComplete(() {
+                                                          print('like/dislike added to firestore');
+                                                        });
 
                                                       },
                                                     ),
-                                                    Text(postListMap[index]['likes'].toString()),
+                                                    Text(likeCounterMap[index].toString()),
                                                   ],
                                                 )
                                             ),
@@ -340,7 +405,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  getPostsListFromDatabase() async {
+  Future<dynamic> getPostsListFromDatabase() async {
     user = await FirebaseAuth.instance.currentUser();
     QuerySnapshot collectionSnapshot = await Firestore.instance.collection("Posts").getDocuments();
     List<DocumentSnapshot> templist;
