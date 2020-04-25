@@ -59,7 +59,7 @@ class _EventsListPageState extends State<EventsListPage> {
               ),
             ),
             FutureBuilder(
-              future: getListsFromDatabase(),
+              future: getEventListsFromDatabase(),
               builder: (context,res){
 
                 if(!res.hasData){
@@ -197,7 +197,7 @@ class _EventsListPageState extends State<EventsListPage> {
     );
   }
 
-  getListsFromDatabase() async {
+  getEventListsFromDatabase() async {
     user = await FirebaseAuth.instance.currentUser();
     QuerySnapshot collectionSnapshot = await Firestore.instance.collection("Events").getDocuments();
     List<DocumentSnapshot> templist;

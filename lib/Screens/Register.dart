@@ -268,67 +268,6 @@ class _RegisterState extends State<Register> {
                       },
                     ),
                   ),
-//                  MultiSelect(
-//                      autovalidate: false,
-//                      titleText: 'Select your favorite cuisines',
-//                      errorText: 'Please select one or more option(s)',
-//                      dataSource: [
-//                        {
-//                          "display": "South Indian",
-//                          "value": 'South Indian',
-//                        },
-//                        {
-//                          "display": "North Indian",
-//                          "value": 'North Indian',
-//                        },
-//                        {
-//                          "display": "Chinese",
-//                          "value": 'Chinese',
-//                        },
-//                        {
-//                          "display": "Italian",
-//                          "value": 'Italian',
-//                        },
-//                        {
-//                          "display": "Thai",
-//                          "value": 'Thai',
-//                        },
-//                        {
-//                          "display": "American",
-//                          "value": 'American',
-//                        },
-//                        {
-//                          "display": "Japanese",
-//                          "value": 'Japanese',
-//                        },
-//                        {
-//                          "display": "Mexican",
-//                          "value": 'Mexican',
-//                        },
-//                        {
-//                          "display": "Vegeterian",
-//                          "value": 'Vegeterian',
-//                        },
-//                        {
-//                          "display": "Non Vegeterian",
-//                          "value": 'Non Vegeterian',
-//                        },
-//                        {
-//                          "display": "Sweet",
-//                          "value": 'Sweet',
-//                        },
-//                      ],
-//                      textField: 'display',
-//                      valueField: 'value',
-//                      filterable: true,
-//                      required: true,
-//                      onSaved: (value) {
-//                        print('selected values $value');
-//
-//                        favCuisinesList = value;
-//
-//                      },
-//                  ),
                   Container(
                     padding: EdgeInsets.all(5),
                     margin: EdgeInsets.all(10),
@@ -347,18 +286,14 @@ class _RegisterState extends State<Register> {
                           child: Text("Select your favorite cuisines"),
                           onPressed: () => _showSelectFavoriteCuisinesDialog(),
                         ),
-//                        Container(
-//                          padding: EdgeInsets.all(10),
-//                          alignment: Alignment.topLeft,
-//                          child: Text("Selected Cuisines: ", style: TextStyle(color: Colors.redAccent),),
-//                        ),
                         Container(
                           padding: EdgeInsets.all(10),
                           child: Text(favCuisinesList.join(" , "), textAlign: TextAlign.center,),
                         ),
                       ],
                     ),
-                  ),                  Container(
+                  ),
+                  Container(
                     padding: EdgeInsets.all(10),
                     child: !isLoading? RaisedButton(
                       child: Text("Register",style: TextStyle(color: Colors.white),),
@@ -579,6 +514,7 @@ class _RegisterState extends State<Register> {
           );
         });
   }
+
 }
 
 

@@ -11,7 +11,9 @@ import 'package:ocd/Screens/AddReviewPage.dart';
 import 'package:ocd/Screens/ReadReviewsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'AddEventReviewPage.dart';
 import 'RatingsAnalysis.dart';
+import 'ReadEventReviewsPage.dart';
 import 'ViewPostPage.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,14 +33,24 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
   Map<int, bool> postLikeMap;
   Map<int, int> postLikeCounterMap;
 
+  // restaurants
   List<Map<dynamic,dynamic>> restaurantListMap;
   List<Map<String,dynamic>> restaurantRatingsListMap;
   List restaurantKeyLists;
 
+  // events
+  List<Map<String,dynamic>> eventListMap;
+  List<Map<String,dynamic>> eventRatingsListMap;
+  List eventKeyLists;
+
+
   // used for filters
-  double rest_radius, post_radius;
+  double rest_radius;
   double rest_ratings;
+  double event_radius;
+  double event_ratings;
   int post_likes;
+  double post_radius;
 
   double lat, long;
 
@@ -138,6 +150,10 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     post_radius = 10.0;
     post_likes = 0;
 
+    // event filter
+    event_radius = 10.0;
+    event_ratings = 4.0;
+
     // recommendations
     // cuisines based
     userMap = new Map();
@@ -157,6 +173,10 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     restaurantRatingsListMap = new List();
     restaurantKeyLists = new List();
 
+    eventListMap = new List();
+    eventRatingsListMap = new List();
+    eventKeyLists = new List();
+
     super.initState();
   }
 
@@ -166,7 +186,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           leading: Icon(Icons.my_location),
@@ -190,6 +210,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
           bottom: TabBar(tabs: [
             Tab(child: Text('Posts'),),
             Tab(child: Text('Restaurants'),),
+            Tab(child: Text('Events'),),
           ]),
         ),
         body: TabBarView(
@@ -527,86 +548,86 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                            PopupMenuButton<double>(
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 1.0,
-                                  child: Text('< 1KM'),
-                                ),
-                                PopupMenuItem(
-                                  value: 5.0,
-                                  child: Text('< 5KM'),
-                                ),
-                                PopupMenuItem(
-                                  value: 10.0,
-                                  child: Text('< 10KM'),
-                                ),
-                                PopupMenuItem(
-                                  value: 50.0,
-                                  child: Text('< 50KM'),
-                                ),
-                                PopupMenuItem(
-                                  value: 100.0,
-                                  child: Text('< 100KM'),
-                                ),
-                                PopupMenuItem(
-                                  value: 500.0,
-                                  child: Text('< 500KM'),
-                                ),
-                                PopupMenuItem(
-                                  value: 99999.0,
-                                  child: Text('Any'),
-                                ),
-                              ],
-                              initialValue: rest_radius,
-                              onSelected: (value) {
-                               setState(() {
-                                 rest_radius = value;
-                               });
-
-                                print("value:$value");
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: Text('Distance', style: TextStyle(color: Colors.blue, fontSize: 16), ),
-                              ),
+                        PopupMenuButton<double>(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1.0,
+                              child: Text('< 1KM'),
                             ),
-                            PopupMenuButton<double>(
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 1.0,
-                                  child: Text('> 1 Star'),
-                                ),
-                                PopupMenuItem(
-                                  value: 2.0,
-                                  child: Text('> 2 Star'),
-                                ),
-                                PopupMenuItem(
-                                  value: 3.0,
-                                  child: Text('> 3 Star'),
-                                ),
-                                PopupMenuItem(
-                                  value: 4.0,
-                                  child: Text('> 4 Star'),
-                                ),
-                                PopupMenuItem(
-                                  value: 4.9,
-                                  child: Text('5 Star'),
-                                ),
-                              ],
-                              initialValue: rest_ratings,
-                              onSelected: (value) {
-                                setState(() {
-                                  rest_ratings = value;
-                                });
-
-                                print("value:$value");
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: Text('Ratings', style: TextStyle(color: Colors.blue, fontSize: 16), ),
-                              ),
+                            PopupMenuItem(
+                              value: 5.0,
+                              child: Text('< 5KM'),
                             ),
+                            PopupMenuItem(
+                              value: 10.0,
+                              child: Text('< 10KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 50.0,
+                              child: Text('< 50KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 100.0,
+                              child: Text('< 100KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 500.0,
+                              child: Text('< 500KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 99999.0,
+                              child: Text('Any'),
+                            ),
+                          ],
+                          initialValue: rest_radius,
+                          onSelected: (value) {
+                            setState(() {
+                              rest_radius = value;
+                            });
+
+                            print("value:$value");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text('Distance', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                          ),
+                        ),
+                        PopupMenuButton<double>(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1.0,
+                              child: Text('> 1 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 2.0,
+                              child: Text('> 2 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 3.0,
+                              child: Text('> 3 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 4.0,
+                              child: Text('> 4 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 4.9,
+                              child: Text('5 Star'),
+                            ),
+                          ],
+                          initialValue: rest_ratings,
+                          onSelected: (value) {
+                            setState(() {
+                              rest_ratings = value;
+                            });
+
+                            print("value:$value");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text('Ratings', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -648,7 +669,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
 
                                   // check if cuisines of restaurants have any intersection item with user's favourite cuisines
                                   if(
-                                    restaurantListMap[index]["cuisines"].toSet().intersection(recommendation_textList.toSet()).length > 0
+                                  restaurantListMap[index]["cuisines"].toSet().intersection(recommendation_textList.toSet()).length > 0
                                   ) {
                                     return GestureDetector(
                                       onTap: (){
@@ -698,10 +719,10 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                         child: Image.network(restaurantListMap[index]["image"], fit: BoxFit.fill,)),
                                                     Container(
                                                       width: screenWidth-40,
-                                                        child: Text(
-                                                            'Cuisines: '+ restaurantListMap[index]["cuisines"].toString().replaceAll('[', '').replaceAll(']', ''),
-                                                          softWrap: true,
-                                                        ),
+                                                      child: Text(
+                                                        'Cuisines: '+ restaurantListMap[index]["cuisines"].toString().replaceAll('[', '').replaceAll(']', ''),
+                                                        softWrap: true,
+                                                      ),
                                                     ),
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -744,6 +765,251 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                   else{
                                     return Container();
                                   }
+
+                                }
+                            );
+                          }else{
+                            return Center(child: Container(child: Text('No recommendation to show.'),),);
+                          }
+
+                        }
+
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              child: Column(
+//                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(left: 10.0, top: 10.0),
+                    child: Text('Apply Filters to Improve Recommendations'),
+                  ),
+                  Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        PopupMenuButton<double>(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1.0,
+                              child: Text('< 1KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 5.0,
+                              child: Text('< 5KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 10.0,
+                              child: Text('< 10KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 50.0,
+                              child: Text('< 50KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 100.0,
+                              child: Text('< 100KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 500.0,
+                              child: Text('< 500KM'),
+                            ),
+                            PopupMenuItem(
+                              value: 99999.0,
+                              child: Text('Any'),
+                            ),
+                          ],
+                          initialValue: event_radius,
+                          onSelected: (value) {
+                            setState(() {
+                              event_radius = value;
+                            });
+
+                            print("value:$value");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text('Distance', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                          ),
+                        ),
+                        PopupMenuButton<double>(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1.0,
+                              child: Text('> 1 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 2.0,
+                              child: Text('> 2 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 3.0,
+                              child: Text('> 3 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 4.0,
+                              child: Text('> 4 Star'),
+                            ),
+                            PopupMenuItem(
+                              value: 4.9,
+                              child: Text('5 Star'),
+                            ),
+                          ],
+                          initialValue: event_ratings,
+                          onSelected: (value) {
+                            setState(() {
+                              event_ratings = value;
+                            });
+
+                            print("value:$value");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text('Ratings', style: TextStyle(color: Colors.blue, fontSize: 16), ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: FutureBuilder(
+                      future: Future.wait([
+                        getEventListsFromDatabase(),
+                      ]),
+                      builder: (context,res){
+
+                        if(!res.hasData){
+                          return Center(
+                              child: CircularProgressIndicator()
+                          );
+                        }else{
+
+                          eventListMap = res.data[0];
+
+                          eventListMap.removeWhere((element){
+                            // returns distance in KM
+                            double distance= calculateDistance(lat, long, element['lat'], element['long']);
+                            return (distance> event_radius);
+                          });
+
+                          eventListMap.removeWhere((element){
+                            return ( double.parse(element['avg_rating'])< event_ratings );
+                          });
+
+                          print('eventRatingsListMap.toString(): '+eventRatingsListMap.toString());
+                          print('eventListMap.toString(): '+eventListMap.toString());
+
+                          int eventCount = eventListMap.length;
+
+                          if(eventCount>0){
+                            return ListView.builder(
+                                itemCount: eventCount,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index){
+
+                                  // check if cuisines of restaurants have any intersection item with user's favourite cuisines
+                                  return GestureDetector(
+                                    onTap: (){
+
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                          ReadEventReviewsPage(event_id: eventKeyLists[index], name: eventListMap[index]["name"], avg_rating: eventListMap[index]["avg_rating"], image: eventListMap[index]["image"])
+                                      ));
+
+                                    },
+                                    child: Card(
+                                      elevation: 3,
+                                      margin: EdgeInsets.all(10),
+                                      child: Container(
+                                        padding: EdgeInsets.all(10),
+                                        width: MediaQuery.of(context).size.width,
+                                        color: Colors.grey[000],
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Container(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: <Widget>[
+                                                      Container(width: screenWidth - 110,
+                                                          padding: EdgeInsets.all(5),
+                                                          child: Text(eventListMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                      Container(width: 45,
+                                                          alignment: Alignment.topRight,
+                                                          padding: EdgeInsets.all(5),
+                                                          child: Text(eventListMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                      Icon(Icons.star),
+                                                    ],
+                                                  ),
+                                                  Container(width: screenWidth - 40,
+                                                      height: 250,
+                                                      padding: EdgeInsets.only(top: 6, bottom: 3),
+                                                      child: Image.network(eventListMap[index]["image"], fit: BoxFit.fill,)),
+                                                  Container(
+                                                    width: screenWidth-40,
+                                                    child: Text(
+                                                      'Footfall: '+ eventListMap[index]["footfall"].toString(),
+                                                      softWrap: true,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    width: screenWidth-40,
+                                                    child: Text(
+                                                      'Location: '+ eventListMap[index]["location"].toString(),
+                                                      softWrap: true,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    width: screenWidth-40,
+                                                    child: Text(
+                                                      'Type: '+ eventListMap[index]["type"].toString(),
+                                                      softWrap: true,
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: <Widget>[
+                                                      Container(width: 160,
+                                                          padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                          child: FlatButton(
+                                                            child: Text("Write Review", style: TextStyle(color: Colors.blue),),
+                                                            onPressed: (){
+
+                                                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddEventReviewPage(event_id: eventKeyLists[index])));
+
+                                                            },
+                                                          )
+                                                      ),
+                                                      Container(width: 160,
+                                                          padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                          child: FlatButton(
+                                                            child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
+                                                            onPressed: (){
+
+                                                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                                  ReadEventReviewsPage(event_id: eventKeyLists[index], name: eventListMap[index]["name"], avg_rating: eventListMap[index]["avg_rating"], image: eventListMap[index]["image"])
+                                                              ));
+
+                                                            },
+                                                          )
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
 
                                 }
                             );
@@ -815,6 +1081,37 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
 
     });
 
+
+    return list;
+  }
+
+
+  Future<dynamic> getEventListsFromDatabase() async {
+    user = await FirebaseAuth.instance.currentUser();
+    QuerySnapshot collectionSnapshot = await Firestore.instance.collection("Events").getDocuments();
+    List<DocumentSnapshot> templist;
+    List<Map<dynamic, dynamic>> list = new List();
+
+    templist = collectionSnapshot.documents;
+
+    list = templist.map((DocumentSnapshot docSnapshot){
+      eventKeyLists.add(docSnapshot.documentID);
+
+      return docSnapshot.data;
+    }).toList();
+
+
+    for(int i=0; i < eventKeyLists.length ; i++){
+      Firestore.instance.collection("Events").document(eventKeyLists[i]).collection('Ratings').getDocuments().then((QuerySnapshot querySnapshot){
+
+        List<DocumentSnapshot> ratingsTempList = querySnapshot.documents;
+
+        this.eventRatingsListMap = ratingsTempList.map((DocumentSnapshot docSnapshot){
+          return docSnapshot.data;
+        }).toList();
+
+      });
+    }
 
     return list;
   }

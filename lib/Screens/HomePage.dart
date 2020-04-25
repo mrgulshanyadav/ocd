@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:ocd/Screens/AboutUs.dart';
+import 'package:ocd/Screens/AddEventPage.dart';
+import 'package:ocd/Screens/AddRestaurantPage.dart';
 import 'package:ocd/Screens/AnalysisPage.dart';
 import 'package:ocd/Screens/EventsListPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +43,7 @@ class _HomePageState extends State<HomePage> {
   PermissionStatus _permissionGranted;
   LocationData _locationData;
 
-  String user_name, image_url;
+  String user_name, image_url, user_email;
 
   Future<void> getUserLocation() async {
     _serviceEnabled = await location.serviceEnabled();
@@ -88,6 +90,7 @@ class _HomePageState extends State<HomePage> {
     await Firestore.instance.collection("Users").document(user.uid).get().then((DocumentSnapshot snapshot) async {
       setState(() {
         user_name = snapshot.data['name'];
+        user_email = snapshot.data['email'];
         image_url = snapshot.data['profile_pic'];
       });
     });
@@ -119,6 +122,7 @@ class _HomePageState extends State<HomePage> {
     likeCounterMap = new Map();
 
     user_name ='';
+    user_email ='';
     image_url = '';
 
     addVisitDateToFirebase();
@@ -166,6 +170,18 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            Visibility(visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false, child: ListTile(
+              title: Text('Add Event'),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddEventPage()));
+              },
+            ),),
+            Visibility(visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false, child: ListTile(
+              title: Text('Add Restaurant'),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddRestaurantPage()));
+              },
+            ),),
             ListTile(
               title: Text('Events'),
               onTap: (){
