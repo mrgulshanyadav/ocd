@@ -9,8 +9,9 @@ import 'package:image_picker/image_picker.dart';
 
 class AddReviewPage extends StatefulWidget {
   String rest_id;
+  String type;
 
-  AddReviewPage({@required this.rest_id});
+  AddReviewPage({@required this.rest_id, @required this.type});
 
   @override
   _AddReviewPageState createState() => _AddReviewPageState();
@@ -152,7 +153,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                           listMap.putIfAbsent("posted_by", ()=> user.uid);
                           listMap.putIfAbsent("posted_by_name", ()=> userProfile.data['name']);
 
-                          Firestore.instance.collection("Restaurants").document(widget.rest_id).collection('Reviews').document(user.uid).setData(listMap).whenComplete((){
+                          Firestore.instance.collection(widget.type.toLowerCase()=="rest"? "Restaurants": "Events").document(widget.rest_id).collection('Reviews').document(user.uid).setData(listMap).whenComplete((){
                             _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Review Posted"), duration: Duration(seconds: 3),));
 
                             setState(() {

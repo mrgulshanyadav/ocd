@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:ocd/Screens/AboutUs.dart';
 import 'package:ocd/Screens/AnalysisPage.dart';
+import 'package:ocd/Screens/EventsListPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AddPostPage.dart';
 import 'ViewPostPage.dart';
@@ -166,9 +167,15 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
+              title: Text('Events'),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EventsListPage()));
+              },
+            ),
+            ListTile(
               title: Text('Analysis'),
               onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AnalysisPage()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AnalysisPage()));
               },
             ),
             ListTile(

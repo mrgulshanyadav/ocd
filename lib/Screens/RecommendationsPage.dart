@@ -11,6 +11,7 @@ import 'package:ocd/Screens/AddReviewPage.dart';
 import 'package:ocd/Screens/ReadReviewsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'RatingsAnalysis.dart';
 import 'ViewPostPage.dart';
 import 'package:http/http.dart' as http;
 
@@ -677,10 +678,17 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                         Container(width: screenWidth - 110,
                                                             padding: EdgeInsets.all(5),
                                                             child: Text(restaurantListMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                                        Container(width: 45,
-                                                            alignment: Alignment.topRight,
-                                                            padding: EdgeInsets.all(5),
-                                                            child: Text(restaurantListMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                        GestureDetector(
+                                                          onTap: (){
+                                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                                RatingsAnalysis(rest_id: restaurantKeyLists[index])
+                                                            ));
+                                                          },
+                                                          child: Container(width: 45,
+                                                              alignment: Alignment.topRight,
+                                                              padding: EdgeInsets.all(5),
+                                                              child: Text(restaurantListMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                        ),
                                                         Icon(Icons.star),
                                                       ],
                                                     ),
@@ -704,7 +712,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                               child: Text("Write Review", style: TextStyle(color: Colors.blue),),
                                                               onPressed: (){
 
-                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index])));
+                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index], type: 'Rest',)));
 
                                                               },
                                                             )

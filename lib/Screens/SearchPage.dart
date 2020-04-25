@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Screens/RatingsAnalysis.dart';
 import 'package:ocd/Screens/ReadReviewsPage.dart';
 import 'AddReviewPage.dart';
 
@@ -106,10 +107,17 @@ class _SearchPageState extends State<SearchPage> {
                                                 Container(width: screenWidth - 110,
                                                     padding: EdgeInsets.all(5),
                                                     child: Text(listMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                                Container(width: 45,
-                                                    alignment: Alignment.topRight,
-                                                    padding: EdgeInsets.all(5),
-                                                    child: Text(listMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                GestureDetector(
+                                                  onTap: (){
+                                                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                        RatingsAnalysis(rest_id: keyLists[index])
+                                                    ));
+                                                  },
+                                                  child: Container(width: 45,
+                                                      alignment: Alignment.topRight,
+                                                      padding: EdgeInsets.all(5),
+                                                      child: Text(listMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                                ),
                                                 Icon(Icons.star),
                                               ],
                                             ),
@@ -117,6 +125,13 @@ class _SearchPageState extends State<SearchPage> {
                                                 height: 250,
                                                 padding: EdgeInsets.only(top: 6, bottom: 3),
                                                 child: Image.network(listMap[index]["image"], fit: BoxFit.fill,)),
+                                            Container(
+                                              width: screenWidth-40,
+                                              child: Text(
+                                                'Cuisines: '+ listMap[index]["cuisines"].toString().replaceAll('[', '').replaceAll(']', ''),
+                                                softWrap: true,
+                                              ),
+                                            ),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: <Widget>[
@@ -126,7 +141,7 @@ class _SearchPageState extends State<SearchPage> {
                                                       child: Text("Write Review", style: TextStyle(color: Colors.blue),),
                                                       onPressed: (){
 
-                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index])));
+                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index], type: 'Rest',)));
 
                                                       },
                                                     )

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'AddReviewPage.dart';
+import 'RatingsAnalysis.dart';
 
 class ReadReviewsPage extends StatefulWidget {
   String rest_id, name, avg_rating, image;
@@ -114,10 +115,17 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                           Container(width: screenWidth - 110,
                                               padding: EdgeInsets.only(top: 3),
                                               child: Text(reviewsListMap[index]['posted_by_name'], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: false,)),
-                                          Container(width: 45,
-                                              alignment: Alignment.topRight,
-                                              padding: EdgeInsets.only(top: 3, right: 3),
-                                              child: Text(reviewsListMap[index]['average_rating'], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                          GestureDetector(
+                                            onTap: (){
+                                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                  RatingsAnalysis(rest_id: keyLists[index])
+                                              ));
+                                            },
+                                            child: Container(width: 45,
+                                                alignment: Alignment.topRight,
+                                                padding: EdgeInsets.only(top: 3, right: 3),
+                                                child: Text(reviewsListMap[index]['average_rating'], style: TextStyle(fontSize: 20), softWrap: true,)),
+                                          ),
                                           Icon(Icons.star),
                                         ],
                                       ),
