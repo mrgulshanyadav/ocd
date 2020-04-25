@@ -67,10 +67,17 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                           Container(width: screenWidth - 90,
                               padding: EdgeInsets.only(top: 3),
                               child: Text(widget.name, style: TextStyle(fontSize: 20), softWrap: true,)),
-                          Container(width: 45,
-                              alignment: Alignment.topRight,
-                              padding: EdgeInsets.only(top: 3, right: 3),
-                              child: Text(widget.avg_rating, style: TextStyle(fontSize: 20), softWrap: true,)),
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                  RatingsAnalysis(rest_id: widget.rest_id)
+                              ));
+                            },
+                            child: Container(width: 45,
+                                alignment: Alignment.topRight,
+                                padding: EdgeInsets.only(top: 3, right: 3),
+                                child: Text(widget.avg_rating, style: TextStyle(fontSize: 20), softWrap: true,)),
+                          ),
                           Icon(Icons.star),
                         ],
                       ),
@@ -115,17 +122,10 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                                           Container(width: screenWidth - 110,
                                               padding: EdgeInsets.only(top: 3),
                                               child: Text(reviewsListMap[index]['posted_by_name'], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: false,)),
-                                          GestureDetector(
-                                            onTap: (){
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                  RatingsAnalysis(rest_id: keyLists[index])
-                                              ));
-                                            },
-                                            child: Container(width: 45,
-                                                alignment: Alignment.topRight,
-                                                padding: EdgeInsets.only(top: 3, right: 3),
-                                                child: Text(reviewsListMap[index]['average_rating'], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                          ),
+                                          Container(width: 45,
+                                              alignment: Alignment.topRight,
+                                              padding: EdgeInsets.only(top: 3, right: 3),
+                                              child: Text(reviewsListMap[index]['average_rating'], style: TextStyle(fontSize: 20), softWrap: true,)),
                                           Icon(Icons.star),
                                         ],
                                       ),
