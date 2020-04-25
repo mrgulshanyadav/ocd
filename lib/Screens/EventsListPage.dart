@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Screens/AddEventReviewPage.dart';
 import 'package:ocd/Screens/RatingsAnalysis.dart';
+import 'package:ocd/Screens/ReadEventReviewsPage.dart';
 import 'package:ocd/Screens/ReadReviewsPage.dart';
 import 'AddReviewPage.dart';
 
@@ -83,7 +85,7 @@ class _EventsListPageState extends State<EventsListPage> {
                               onTap: (){
 
                                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                    ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
+                                    ReadEventReviewsPage(event_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
                                 ));
 
                               },
@@ -107,17 +109,10 @@ class _EventsListPageState extends State<EventsListPage> {
                                                 Container(width: screenWidth - 110,
                                                     padding: EdgeInsets.all(5),
                                                     child: Text(listMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                                GestureDetector(
-                                                  onTap: (){
-                                                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                        RatingsAnalysis(rest_id: keyLists[index])
-                                                    ));
-                                                  },
-                                                  child: Container(width: 45,
-                                                      alignment: Alignment.topRight,
-                                                      padding: EdgeInsets.all(5),
-                                                      child: Text(listMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                                ),
+                                                Container(width: 45,
+                                                    alignment: Alignment.topRight,
+                                                    padding: EdgeInsets.all(5),
+                                                    child: Text(listMap[index]["avg_rating"], style: TextStyle(fontSize: 20), softWrap: true,)),
                                                 Icon(Icons.star),
                                               ],
                                             ),
@@ -155,7 +150,7 @@ class _EventsListPageState extends State<EventsListPage> {
                                                       child: Text("Write Review", style: TextStyle(color: Colors.blue),),
                                                       onPressed: (){
 
-                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index], type: 'Events',)));
+                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddEventReviewPage(event_id: keyLists[index])));
 
                                                       },
                                                     )
@@ -167,7 +162,7 @@ class _EventsListPageState extends State<EventsListPage> {
                                                       onPressed: (){
 
                                                         Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                            ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
+                                                            ReadEventReviewsPage(event_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
                                                         ));
 
                                                       },

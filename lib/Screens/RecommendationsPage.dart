@@ -712,7 +712,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                               child: Text("Write Review", style: TextStyle(color: Colors.blue),),
                                                               onPressed: (){
 
-                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index], type: 'Rest',)));
+                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index])));
 
                                                               },
                                                             )

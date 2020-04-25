@@ -7,19 +7,19 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddReviewPage extends StatefulWidget {
-  String rest_id;
+class AddEventReviewPage extends StatefulWidget {
+  String event_id;
 
-  AddReviewPage({@required this.rest_id});
+  AddEventReviewPage({@required this.event_id});
 
   @override
-  _AddReviewPageState createState() => _AddReviewPageState();
+  _AddEventReviewPageState createState() => _AddEventReviewPageState();
 }
 
-class _AddReviewPageState extends State<AddReviewPage> {
+class _AddEventReviewPageState extends State<AddEventReviewPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
-  List<double> ratingList = [1.0,1.0,1.0,1.0,1.0];
+  double ratings = 1.0;
 
   String review;
 
@@ -52,7 +52,21 @@ class _AddReviewPageState extends State<AddReviewPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
+                  width: screenWidth,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
+                    child: Text('Rating', style: TextStyle(fontSize: 18),)
+                ),
+                Center(
+                  child: new StarRating(
+                    rating: ratings,
+                    onRatingChanged: (rating) => setState(() => this.ratings = rating),
+                    color: Colors.redAccent,
+                  ),
+                ),
+                Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(top: 40),
                   child: TextField(
                     maxLines: 4,
                     decoration: InputDecoration(
@@ -68,56 +82,6 @@ class _AddReviewPageState extends State<AddReviewPage> {
                       });
                     },
                   ),
-                ),
-                Container(
-                  width: screenWidth,
-                    padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                    child: Text('Quality', style: TextStyle(fontSize: 18),)
-                ),
-                new StarRating(
-                  rating: ratingList[0],
-                  onRatingChanged: (rating) => setState(() => this.ratingList[0] = rating),
-                  color: Colors.redAccent,
-                ),
-                Container(
-                    width: screenWidth,
-                    padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                    child: Text('Quantity', style: TextStyle(fontSize: 18),)
-                ),
-                new StarRating(
-                  rating: ratingList[1],
-                  onRatingChanged: (rating) => setState(() => this.ratingList[1] = rating),
-                  color: Colors.redAccent,
-                ),
-                Container(
-                    width: screenWidth,
-                    padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                    child: Text('Cost', style: TextStyle(fontSize: 18),)
-                ),
-                new StarRating(
-                  rating: ratingList[2],
-                  onRatingChanged: (rating) => setState(() => this.ratingList[2] = rating),
-                  color: Colors.redAccent,
-                ),
-                Container(
-                    width: screenWidth,
-                    padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                    child: Text('Hygiene', style: TextStyle(fontSize: 18),)
-                ),
-                new StarRating(
-                  rating: ratingList[3],
-                  onRatingChanged: (rating) => setState(() => this.ratingList[3] = rating),
-                  color: Colors.redAccent,
-                ),
-                Container(
-                    width: screenWidth,
-                    padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                    child: Text('Ambience', style: TextStyle(fontSize: 18),)
-                ),
-                new StarRating(
-                  rating: ratingList[4],
-                  onRatingChanged: (rating) => setState(() => this.ratingList[4] = rating),
-                  color: Colors.redAccent,
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
@@ -140,19 +104,13 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
                         await Firestore.instance.collection("Users").document(user.uid).get().then((userProfile){
 
-                          double average_ratings = (ratingList[0]+ratingList[1]+ratingList[2]+ratingList[3]+ratingList[4])/5;
                           Map<String,dynamic> listMap = new Map();
                           listMap.putIfAbsent("review", ()=> review);
-                          listMap.putIfAbsent("quality", ()=> ratingList[0].toString());
-                          listMap.putIfAbsent("quantity", ()=> ratingList[1].toString());
-                          listMap.putIfAbsent("cost", ()=> ratingList[2].toString());
-                          listMap.putIfAbsent("hygiene", ()=> ratingList[3].toString());
-                          listMap.putIfAbsent("ambience", ()=> ratingList[4].toString());
-                          listMap.putIfAbsent("average_rating", ()=> average_ratings.toString());
+                          listMap.putIfAbsent("rating", ()=> ratings.toString());
                           listMap.putIfAbsent("posted_by", ()=> user.uid);
                           listMap.putIfAbsent("posted_by_name", ()=> userProfile.data['name']);
 
-                          Firestore.instance.collection("Restaurants").document(widget.rest_id).collection('Reviews').document(user.uid).setData(listMap).whenComplete((){
+                          Firestore.instance.collection("Events").document(widget.event_id).collection('Reviews').document(user.uid).setData(listMap).whenComplete((){
                             _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Review Posted"), duration: Duration(seconds: 3),));
 
                             setState(() {
@@ -229,7 +187,7 @@ class StarRating extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 15),
-        child: new Row(mainAxisAlignment: MainAxisAlignment.start, children: new List.generate(starCount, (index) => buildStar(context, index)))
+        child: new Row(mainAxisAlignment: MainAxisAlignment.center, children: new List.generate(starCount, (index) => buildStar(context, index)))
     );
   }
 }
