@@ -3,6 +3,7 @@ import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ViewPostPage extends StatefulWidget {
   Map<String, dynamic> postMap;
@@ -23,12 +24,25 @@ class _ViewPostPageState extends State<ViewPostPage> {
   bool isLiked;
   int likeCounter;
 
+  bool isGuest;
+  Future<bool> checkIfGuest() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool is_guest = prefs.getBool('isGuest')??false;
+    setState(() {
+      isGuest = is_guest;
+    });
+
+    return is_guest;
+  }
+
   @override
   void initState() {
 
     // change initial value to coming from homepage
     isLiked = widget.isLiked;
     likeCounter = widget.likeCounter;
+
+    checkIfGuest();
 
     super.initState();
   }
@@ -105,7 +119,7 @@ class _ViewPostPageState extends State<ViewPostPage> {
                                 children: <Widget>[
                                   IconButton(
                                     icon: Icon(isLiked? Icons.favorite: Icons.favorite_border, color: Colors.red,),
-                                    onPressed: () async {
+                                    onPressed: isGuest? null:() async {
 
                                       // like dislike
 

@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ocd/Screens/RatingsAnalysis.dart';
 import 'package:ocd/Screens/ReadReviewsPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'AddReviewPage.dart';
 
 class SearchPage extends StatefulWidget {
@@ -18,8 +20,20 @@ class _SearchPageState extends State<SearchPage> {
 
   String search_text;
 
+  bool isGuest;
+  Future<void> getSharedData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isGuest = prefs.getBool('isGuest')??false;
+    });
+  }
+
   @override
   void initState() {
+    isGuest = false;
+
+    getSharedData();
+
     search_text = "";
     listMap = new List();
     ratingsListMap = new List();
@@ -135,18 +149,21 @@ class _SearchPageState extends State<SearchPage> {
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: <Widget>[
-                                                Container(width: 160,
-                                                    padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                    child: FlatButton(
-                                                      child: Text("Write Review", style: TextStyle(color: Colors.blue),),
-                                                      onPressed: (){
+                                                Visibility(
+                                                  visible: !isGuest? true: false,
+                                                  child: Container(width: 160,
+                                                      padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                      child: FlatButton(
+                                                        child: Text("Write Review", style: TextStyle(color: Colors.blue),),
+                                                        onPressed: (){
 
-                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index])));
+                                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index])));
 
-                                                      },
-                                                    )
+                                                        },
+                                                      )
+                                                  ),
                                                 ),
-                                                Container(width: 160,
+                                                Container(width: !isGuest? 160: 320,
                                                     padding: EdgeInsets.only(top: 3, bottom: 3),
                                                     child: FlatButton(
                                                       child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),

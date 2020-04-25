@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
     });
 
   }
-  
+
   Future<void> addVisitDateToFirebase() async {
     user = await FirebaseAuth.instance.currentUser();
 
@@ -111,8 +111,21 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  bool isGuest;
+  Future<bool> checkIfGuest() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool is_guest = prefs.getBool('isGuest')??false;
+    setState(() {
+      isGuest = is_guest;
+    });
+
+    return is_guest;
+  }
+
   @override
   void initState() {
+    isGuest = false;
+
     search_text = "";
 
     postListMap = new List();
@@ -121,12 +134,16 @@ class _HomePageState extends State<HomePage> {
     likeMap = new Map();
     likeCounterMap = new Map();
 
-    user_name ='';
+    user_name ='Guest';
     user_email ='';
     image_url = '';
 
-    addVisitDateToFirebase();
-    getUserLocation();
+    checkIfGuest().then((onValue){
+      if(!onValue){
+        addVisitDateToFirebase();
+        getUserLocation();
+      }
+    });
 
     super.initState();
   }
@@ -138,12 +155,15 @@ class _HomePageState extends State<HomePage> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        backgroundColor: Colors.redAccent,
-        onPressed: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddPostPage()));
-        },
+      floatingActionButton: Visibility(
+        visible: !isGuest? true: false,
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          backgroundColor: Colors.redAccent,
+          onPressed: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddPostPage()));
+          },
+        ),
       ),
       appBar: AppBar(),
       drawer: Drawer(
@@ -188,17 +208,23 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EventsListPage()));
               },
             ),
-            ListTile(
-              title: Text('Analysis'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AnalysisPage()));
-              },
+            Visibility(
+              visible: !isGuest? true: false,
+              child: ListTile(
+                title: Text('Analysis'),
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AnalysisPage()));
+                },
+              ),
             ),
-            ListTile(
-              title: Text('Collab as Blogger'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CollabAsBlogger()));
-              },
+            Visibility(
+              visible: !isGuest? true: false,
+              child: ListTile(
+                title: Text('Collab as Blogger'),
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CollabAsBlogger()));
+                },
+              ),
             ),
             ListTile(
               title: Text('About us'),
@@ -231,9 +257,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             FutureBuilder(
-              future: Future.wait([
+              future: !isGuest? Future.wait([
                 getPostsListFromDatabase(),
-                addVisitDateToFirebase()]),
+                addVisitDateToFirebase()])
+                  :
+              Future.wait([
+                getPostsListFromDatabase()
+              ]),
               builder: (context,res){
 
                 if(!res.hasData){
@@ -258,15 +288,17 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
 
                           Map like_map = postListMap[index]['like_map'];
-                          like_map.forEach((k,v){
-                            if(k==user.uid){
-                              if(v==true){
-                                likeMap.update(index, (v)=> true);
-                              }else{
-                                likeMap.update(index, (v)=> false);
+                          if(!isGuest) {
+                            like_map.forEach((k, v) {
+                              if (k == user.uid) {
+                                if (v == true) {
+                                  likeMap.update(index, (v) => true);
+                                } else {
+                                  likeMap.update(index, (v) => false);
+                                }
                               }
-                            }
-                          });
+                            });
+                          }
 
                           Map likeCounter_map = postListMap[index]['like_map'];
                           likeCounterMap[index] = 0;
@@ -344,7 +376,7 @@ class _HomePageState extends State<HomePage> {
                                                   children: <Widget>[
                                                     IconButton(
                                                       icon: Icon(likeMap[index]? Icons.favorite: Icons.favorite_border, color: Colors.red,),
-                                                      onPressed: () async {
+                                                      onPressed: isGuest? null: () async {
 
                                                         setState(() {
                                                           likeMap.update(index, (v)=> !v);

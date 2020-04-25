@@ -18,15 +18,21 @@ class _MyProfilePageState extends State<MyProfilePage> {
   String loginType;
   Map<String, dynamic> userMap;
 
-  getSharedData() async {
+  bool isGuest;
+  Future<void> getSharedData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       loginType = prefs.getString('loginType')??'email';
+      isGuest = prefs.getBool('isGuest')??false;
     });
   }
 
   @override
   void initState() {
+
+    isGuest = false;
+
+    getSharedData();
 
     loginType = '';
     userMap = new Map();
@@ -44,7 +50,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       body: SafeArea(
         child: Center(
 
-          child: FutureBuilder(
+          child: !isGuest? FutureBuilder(
             future: getUserDetailsFromDatabase(),
             builder: (context,res){
 
@@ -155,6 +161,23 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 ],
               );
             },
+          ):
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: RaisedButton(
+              child: Text("Login First", style: TextStyle(color: Colors.white),),
+              onPressed: () async {
+                // open link
+
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context){
+                      return Login();
+                    }
+                ));
+
+              },
+              color: Colors.blueAccent,
+            ),
           ),
         ),
       ),

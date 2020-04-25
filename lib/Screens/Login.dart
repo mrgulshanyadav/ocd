@@ -19,6 +19,21 @@ class _LoginState extends State<Login> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   String email, password;
 
+  List<String> cuisinesList = [
+    "South Indian",
+    "North Indian",
+    "Chinese",
+    "Italian",
+    "Thai",
+    "Japanese",
+    "American",
+    "Vegetarian",
+    "Non Vegetarian",
+    "Sweets",
+    "Deserts",
+    "Drinks",
+  ];
+
   @override
   void initState() {
 
@@ -113,6 +128,7 @@ class _LoginState extends State<Login> {
 
                               SharedPreferences prefs = await SharedPreferences.getInstance();
                               prefs.setString('loginType', 'email');
+                              prefs.setBool('isGuest', false);
 
                               Navigator.of(context).pushReplacement(MaterialPageRoute(
                                   builder: (context){
@@ -179,6 +195,27 @@ class _LoginState extends State<Login> {
                   padding: EdgeInsets.all(10),
                   child: FlatButton(
                     color: Colors.black,
+                    child: Text("Continue as guest", style: TextStyle(color: Colors.white),),
+                    onPressed: () async {
+
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.setBool('isGuest', true);
+
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context){
+                            return NavigationPage();
+                          }
+                      ));
+
+                    },
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: FlatButton(
+                    color: Colors.black,
                     child: Text("Sign in with google", style: TextStyle(color: Colors.white),),
                     onPressed: () {
                       signInWithGoogle().then((FirebaseUser user) async {
@@ -188,8 +225,12 @@ class _LoginState extends State<Login> {
                         userMap.putIfAbsent("name", ()=> user.displayName);
                         userMap.putIfAbsent("mobile", ()=> 'N/A');
                         userMap.putIfAbsent("profile_pic", ()=> user.photoUrl);
+                        userMap.putIfAbsent("fav_cuisines", ()=> cuisinesList);
 
-                        Firestore.instance.collection("Users").document(user.uid).setData(userMap).whenComplete((){
+                        Firestore.instance.collection("Users").document(user.uid).setData(userMap).whenComplete(() async {
+
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.setBool('isGuest', false);
 
                           Navigator.of(context).pushReplacement(MaterialPageRoute(
                               builder: (context){

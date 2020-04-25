@@ -12,6 +12,7 @@ import 'package:ocd/Screens/ReadReviewsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'AddEventReviewPage.dart';
+import 'Login.dart';
 import 'RatingsAnalysis.dart';
 import 'ReadEventReviewsPage.dart';
 import 'ViewPostPage.dart';
@@ -56,6 +57,8 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
 
   List<Placemark> addresses;
 
+  bool isGuest;
+
   Future<void> getLocationDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     double _lat = prefs.getDouble('lat')?? 0.0;
@@ -63,6 +66,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     setState(() {
       lat = _lat;
       long = _long;
+      isGuest = prefs.getBool('isGuest')??false;
     });
     List<Placemark> _placemark = await Geolocator().placemarkFromCoordinates(_lat, _long);
     setState(() {
@@ -160,6 +164,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     recommendation_textList = new List();
     recommendation_textList.add('');
 
+    isGuest = false;
     getLocationDataFromSharedPreferences().whenComplete((){
       getUserLocation();
     });
@@ -185,7 +190,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
-    return DefaultTabController(
+    return !isGuest? DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
@@ -1027,6 +1032,29 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
             ),
           ],
         ),
+      ),
+    ):
+    Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: RaisedButton(
+              child: Text("Login First", style: TextStyle(color: Colors.white),),
+              onPressed: () async {
+                // open link
+
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context){
+                      return Login();
+                    }
+                ));
+
+              },
+              color: Colors.blueAccent,
+            ),
+          ),
+        )
       ),
     );
   }

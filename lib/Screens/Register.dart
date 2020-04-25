@@ -426,8 +426,12 @@ class _RegisterState extends State<Register> {
                             userMap.putIfAbsent("name", ()=> user.displayName);
                             userMap.putIfAbsent("mobile", ()=> 'N/A');
                             userMap.putIfAbsent("profile_pic", ()=> user.photoUrl);
+                            userMap.putIfAbsent("fav_cuisines", ()=> cuisinesList);
 
-                            Firestore.instance.collection("Users").document(user.uid).setData(userMap).whenComplete((){
+                            Firestore.instance.collection("Users").document(user.uid).setData(userMap).whenComplete(() async {
+
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              prefs.setBool('isGuest', false);
 
                               Navigator.of(context).pushReplacement(MaterialPageRoute(
                                   builder: (context){
