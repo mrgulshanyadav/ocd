@@ -79,7 +79,7 @@ class _RatingsAnalysisState extends State<RatingsAnalysis> {
                 ambience_average = ambience_sum/counter;
 
                 Map<String, double> dataMap = new Map();
-                dataMap.putIfAbsent("Quality", () => quantity_average);
+                dataMap.putIfAbsent("Quality", () => quality_average);
                 dataMap.putIfAbsent("Quantity", () => quantity_average);
                 dataMap.putIfAbsent("Cost", () => cost_average);
                 dataMap.putIfAbsent("Hygiene", () => hygiene_average);
