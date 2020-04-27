@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1012535988430",
+    "firebase_url": "https://ocd-delhi.firebaseio.com",
+    "project_id": "ocd-delhi",
+    "storage_bucket": "ocd-delhi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012535988430:android:e986d5c730ff46fa06809f",
+        "android_client_info": {
+          "package_name": "com.gulshanyadav.ocd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012535988430-kdg5ufimmuuefuqc927sr83fq1nsqr7c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gulshanyadav.ocd",
+            "certificate_hash": "c89b81c85d2114ee86d0f50b9a61478ffe43f9d6"
+          }
+        },
+        {
+          "client_id": "1012535988430-91e29pdfsh2fdthvsnmk5gnah0kjtsv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMAjoSFzTDvhaydYOV5Mm49TECuXwFdBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012535988430-91e29pdfsh2fdthvsnmk5gnah0kjtsv4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
