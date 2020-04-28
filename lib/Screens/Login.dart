@@ -144,31 +144,6 @@ class _LoginState extends State<Login> {
 
                         }
 
-//                Map<String,dynamic> listMap = new Map();
-//                listMap.putIfAbsent("app_name", ()=> application_name);
-//                listMap.putIfAbsent("app_url", ()=> application_url);
-//                listMap.putIfAbsent("username", ()=> username);
-//                listMap.putIfAbsent("password", ()=> password);
-//                listMap.putIfAbsent("remarks", ()=> remarks);
-//
-//                FirebaseUser user = await FirebaseAuth.instance.currentUser();
-//
-//                Firestore.instance.collection("Users").document(user.uid).collection("Lists").add(listMap).whenComplete((){
-//                  Scaffold.of(context).showSnackBar(SnackBar(content: Text("Data Saved in List"), duration: Duration(seconds: 3),));
-//
-//                  setState(() {
-//                    application_name = "";
-//                    application_url = "";
-//                    username = "";
-//                    password = "";
-//                    remarks = "";
-//                  });
-//
-//                }).catchError((error){
-//                  print("Error: "+error);
-//                });
-
-
                       },
                     ),
                   )
@@ -226,6 +201,7 @@ class _LoginState extends State<Login> {
                         userMap.putIfAbsent("mobile", ()=> 'N/A');
                         userMap.putIfAbsent("profile_pic", ()=> user.photoUrl);
                         userMap.putIfAbsent("fav_cuisines", ()=> cuisinesList);
+                        userMap.putIfAbsent("can_blog_post", ()=> true);
 
                         Firestore.instance.collection("Users").document(user.uid).setData(userMap).whenComplete(() async {
 

@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage> {
   LocationData _locationData;
 
   String user_name, image_url, user_email;
+  bool canBlogPost;
 
   Future<void> getUserLocation() async {
     _serviceEnabled = await location.serviceEnabled();
@@ -92,6 +93,7 @@ class _HomePageState extends State<HomePage> {
         user_name = snapshot.data['name'];
         user_email = snapshot.data['email'];
         image_url = snapshot.data['profile_pic'];
+        canBlogPost = snapshot.data['can_blog_post'];
       });
     });
 
@@ -125,6 +127,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     isGuest = false;
+    canBlogPost = false;
 
     search_text = "";
 
@@ -156,7 +159,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       floatingActionButton: Visibility(
-        visible: !isGuest? true: false,
+        visible: !isGuest? canBlogPost? true : false : false,
         child: FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.redAccent,
