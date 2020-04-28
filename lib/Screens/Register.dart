@@ -356,7 +356,7 @@ class _RegisterState extends State<Register> {
                                 userMap.putIfAbsent("mobile", ()=> mobile);
                                 userMap.putIfAbsent("profile_pic", ()=> profile_url);
                                 userMap.putIfAbsent("fav_cuisines", ()=> favCuisinesList);
-                                userMap.putIfAbsent("can_blog_post", ()=> true);
+                                userMap.putIfAbsent("can_blog_post", ()=> false);
 
                                 Firestore.instance.collection("Users").document(value.user.uid).setData(userMap).whenComplete(() async {
                                   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Registered!')));
@@ -428,7 +428,7 @@ class _RegisterState extends State<Register> {
                             userMap.putIfAbsent("mobile", ()=> 'N/A');
                             userMap.putIfAbsent("profile_pic", ()=> user.photoUrl);
                             userMap.putIfAbsent("fav_cuisines", ()=> cuisinesList);
-                            userMap.putIfAbsent("can_blog_post", ()=> true);
+                            userMap.putIfAbsent("can_blog_post", ()=> false);
 
                             Firestore.instance.collection("Users").document(user.uid).setData(userMap).whenComplete(() async {
 

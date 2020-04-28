@@ -201,7 +201,7 @@ class _LoginState extends State<Login> {
                         userMap.putIfAbsent("mobile", ()=> 'N/A');
                         userMap.putIfAbsent("profile_pic", ()=> user.photoUrl);
                         userMap.putIfAbsent("fav_cuisines", ()=> cuisinesList);
-                        userMap.putIfAbsent("can_blog_post", ()=> true);
+                        userMap.putIfAbsent("can_blog_post", ()=> false);
 
                         Firestore.instance.collection("Users").document(user.uid).setData(userMap).whenComplete(() async {
 
