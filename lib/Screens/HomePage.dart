@@ -8,9 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:ocd/Screens/AboutUs.dart';
 import 'package:ocd/Screens/AddEventPage.dart';
+import 'package:ocd/Screens/AddProduct.dart';
 import 'package:ocd/Screens/AddRestaurantPage.dart';
+import 'package:ocd/Screens/AddService.dart';
 import 'package:ocd/Screens/AnalysisPage.dart';
 import 'package:ocd/Screens/EventsListPage.dart';
+import 'package:ocd/Screens/Vendor/VendorPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AddPostPage.dart';
 import 'ViewPostPage.dart';
@@ -212,6 +215,33 @@ class _HomePageState extends State<HomePage> {
               onTap: (){
                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EventsListPage()));
               },
+            ),
+            Visibility(
+              visible: !isGuest? true: false,
+              child: ListTile(
+                title: Text('Vendor'),
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorPage()));
+                },
+              ),
+            ),
+            Visibility(
+              visible: !isGuest? true: false,
+              child: ListTile(
+                title: Text('Add Product'),
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddProduct()));
+                },
+              ),
+            ),
+            Visibility(
+              visible: !isGuest? true: false,
+              child: ListTile(
+                title: Text('Add Service'),
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddService()));
+                },
+              ),
             ),
             Visibility(
               visible: !isGuest? true: false,
