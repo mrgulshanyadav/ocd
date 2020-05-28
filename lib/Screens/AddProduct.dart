@@ -21,7 +21,7 @@ class _AddProductState extends State<AddProduct> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
   String title, description, price;
-  File _image;
+  List<File> _image;
 
   Future getImage(BuildContext context) async {
     showDialog(
@@ -42,7 +42,9 @@ class _AddProductState extends State<AddProduct> {
                       onPressed: () async {
                         var image = await ImagePicker.pickImage(source: ImageSource.camera, maxHeight: 480, maxWidth: 640, imageQuality: 50);
                         setState(() {
-                          _image = image;
+                          if(image!=null){
+                            _image.add(image);
+                          }
                           Navigator.pop(context);
                         });
                       },
@@ -56,32 +58,15 @@ class _AddProductState extends State<AddProduct> {
                         style: TextStyle(fontSize: 26),
                       ),
                       onPressed: () async {
-                        var image = await ImagePicker.pickImage(
-                            source: ImageSource.gallery, maxHeight: 480, maxWidth: 640, imageQuality: 50);
+                        var image = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 480, maxWidth: 640, imageQuality: 50);
                         setState(() {
-                          _image = image;
+                          if(image!=null){
+                            _image.add(image);
+                          }
                           Navigator.pop(context);
                         });
                       },
                     ),
-                    _image != null
-                        ? Divider(
-                      thickness: 2,
-                    ) : Container(),
-                    _image != null
-                        ? FlatButton(
-                      child: Text(
-                        "Remove Profile",
-                        style: TextStyle(fontSize: 26),
-                      ),
-                      onPressed: () async {
-                        setState(() {
-                          _image = null;
-                          Navigator.pop(context);
-                        });
-                      },
-                    )
-                        : Text("",),
                   ],
                 ),
               ));
@@ -97,6 +82,8 @@ class _AddProductState extends State<AddProduct> {
     description = '';
     price = '';
 
+    _image = new List();
+
     isLoading = false;
 
     super.initState();
@@ -107,6 +94,7 @@ class _AddProductState extends State<AddProduct> {
 
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final orientation = MediaQuery.of(context).orientation;
 
     return Scaffold(
       appBar: AppBar(title: Text("Add Product"),),
@@ -125,23 +113,67 @@ class _AddProductState extends State<AddProduct> {
                     height: 150,
                     margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                        border: Border.all(style: BorderStyle.solid, width: 1, color: Colors.black54),
+                      border: Border.all(style: BorderStyle.solid, width: 1, color: Colors.black54),
                     ),
-                    child:_image!=null? GestureDetector(onTap: ()=> getImage(context), child: Image.file(_image)) : Column(
+                    child:Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         FlatButton(
                           child: Text('Upload Product Image', style: TextStyle(color: Colors.black54), textAlign: TextAlign.center,),
                           onPressed: (){
-                            getImage(context);
+                            if(_image.length<5){
+                              getImage(context);
+                            }else{
+                              _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Maximum of 5 images allowed'),));
+                            }
                           },
                         )
                       ],
                     ),
-
                   ),
                 ),
+                _image.length>0? Container(
+                  width: screenWidth,
+                  child: GridView.builder(
+                      itemCount: _image.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3),
+                      itemBuilder: (context, index){
+
+                        return Container(
+                          height: 30,
+                          width: screenWidth/2-10,
+                          padding: EdgeInsets.all(10),
+                          child: Stack(
+                            alignment: Alignment.topRight,
+                            children: <Widget>[
+                              Container(
+                                  alignment: Alignment.center,
+                                  child: Image.file(_image[index], fit: BoxFit.contain,)
+                              ),
+                              Container(
+                                height: 32,
+                                width: 32,
+                                margin: EdgeInsets.only(right: 10),
+                                color: Colors.black12,
+                                child: IconButton(
+                                  icon: Icon(Icons.close, size: 16,),
+                                  onPressed: (){
+                                    if(_image.length>0){
+                                      setState(() {
+                                        _image.removeAt(index);
+                                      });
+                                    }
+                                  },),
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                  ),
+                ): Container(),
                 Container(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -206,8 +238,8 @@ class _AddProductState extends State<AddProduct> {
 
                       // todo: save into excel sheet online
 
-                      if(_image==null){
-                      _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Select Product Image!')));
+                      if(_image.length<1){
+                        _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Select Atleast 1 Product Image!')));
                       }else if(title.isEmpty){
                         _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Enter Title!')));
                       }else if(description.isEmpty){
@@ -224,62 +256,65 @@ class _AddProductState extends State<AddProduct> {
 
                         // todo: save product in database
 
-                        String file_name = DateTime.now().toIso8601String()+'.jpg';
-                        final StorageReference storageReference = FirebaseStorage().ref().child('Product_Images/'+file_name);
+                        List<String> product_image_url = new List();
 
-                        final StorageUploadTask uploadTask = storageReference.putData(_image.readAsBytesSync());
+                        for(int i=0;i<_image.length;i++){
 
-                        final StreamSubscription<StorageTaskEvent> streamSubscription = uploadTask.events.listen((event) {
-                          // You can use this to notify yourself or your user in any kind of way.
-                          // For example: you could use the uploadTask.events stream in a StreamBuilder instead
-                          // to show your user what the current status is. In that case, you would not need to cancel any
-                          // subscription as StreamBuilder handles this automatically.
+                          String file_name = DateTime.now().toIso8601String()+i.toString()+'.jpg';
+                          final StorageReference storageReference = FirebaseStorage().ref().child('Product_Images/'+file_name);
 
-                          // Here, every StorageTaskEvent concerning the upload is printed to the logs.
-                          print('EVENT ${event.type}');
-                        });
+                          final StorageUploadTask uploadTask = storageReference.putData(_image[i].readAsBytesSync());
 
-                        // Cancel your subscription when done.
-                        await uploadTask.onComplete;
-                        streamSubscription.cancel();
+                          final StreamSubscription<StorageTaskEvent> streamSubscription = uploadTask.events.listen((event) {
+                            // You can use this to notify yourself or your user in any kind of way.
+                            // For example: you could use the uploadTask.events stream in a StreamBuilder instead
+                            // to show your user what the current status is. In that case, you would not need to cancel any
+                            // subscription as StreamBuilder handles this automatically.
 
-                        String product_image_url;
-                        storageReference.getDownloadURL().then((val){
-                          product_image_url = val;
-
-                          Map<String,dynamic> userMap = new Map();
-                          userMap.putIfAbsent("product_image_url", ()=> product_image_url);
-                          userMap.putIfAbsent("title", ()=> title);
-                          userMap.putIfAbsent("description", ()=> description);
-                          userMap.putIfAbsent("price", ()=> price);
-                          userMap.putIfAbsent("added_by", ()=> user.uid);
-
-                          Firestore.instance.collection("Products").add(userMap).whenComplete(() async {
-                            _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Product Added!')));
-
-                            print('product added to firestore----------------------->>>>>>>>>>>>>>>>>>>>>>>>');
-                            setState(() {
-                              isLoading = false;
-                            });
-
-                            setState(() {
-                              _image=null;
-                              title = '';
-                              description = '';
-                              price = '';
-                            });
-
-
-                          }).catchError((error){
-                            setState(() {
-                              isLoading = false;
-                            });
-                            print("Error: "+error.toString());
+                            // Here, every StorageTaskEvent concerning the upload is printed to the logs.
+                            print('EVENT ${event.type}');
                           });
 
+                          // Cancel your subscription when done.
+                          await uploadTask.onComplete;
+                          streamSubscription.cancel();
+
+                          await storageReference.getDownloadURL().then((val){
+                            product_image_url.add(val);
+                          });
+
+                        }
+
+
+                        Map<String,dynamic> userMap = new Map();
+                        userMap.putIfAbsent("product_image_url", ()=> product_image_url);
+                        userMap.putIfAbsent("title", ()=> title);
+                        userMap.putIfAbsent("description", ()=> description);
+                        userMap.putIfAbsent("price", ()=> price);
+                        userMap.putIfAbsent("added_by", ()=> user.uid);
+
+                        Firestore.instance.collection("Products").add(userMap).whenComplete(() async {
+                          _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Product Added!')));
+
+                          print('product added to firestore----------------------->>>>>>>>>>>>>>>>>>>>>>>>');
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          setState(() {
+                            _image=new List();
+                            title = '';
+                            description = '';
+                            price = '';
+                          });
+
+
+                        }).catchError((error){
+                          setState(() {
+                            isLoading = false;
+                          });
+                          print("Error: "+error.toString());
                         });
-
-
 
                       }
 
