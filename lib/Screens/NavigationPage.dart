@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ocd/Screens/DukaanPage.dart';
 import './AddPostPage.dart';
 import './HomePage.dart';
 import './RecommendationsPage.dart';
@@ -11,7 +12,7 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> {
-  List<Widget> _children = [HomePage(), SearchPage(), RecommendationsPage(), MyProfilePage()];//UserProfile(), ScoreboardRule(), Settings(), Logout() ];
+  List<Widget> _children = [HomePage(), SearchPage(), RecommendationsPage(), DukaanPage(), MyProfilePage()];//UserProfile(), ScoreboardRule(), Settings(), Logout() ];
   int _currentIndex;
 
   @override
@@ -53,8 +54,12 @@ class _NavigationPageState extends State<NavigationPage> {
                 title: new Text('Recommendations', style: TextStyle(color: _currentIndex == 2 ? Theme.of(context).primaryColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
-                icon: new Icon(Icons.person, color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),
-                title: new Text('My Profile', style: TextStyle(color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),),
+                icon: new Icon(Icons.shop, color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),
+                title: new Text('Dukaan', style: TextStyle(color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),),
+              ),
+              BottomNavigationBarItem(
+                icon: new Icon(Icons.person, color: _currentIndex == 4 ? Theme.of(context).primaryColor : Colors.grey,),
+                title: new Text('My Profile', style: TextStyle(color: _currentIndex == 4 ? Theme.of(context).primaryColor : Colors.grey,),),
               ),
             ],
             fixedColor: Colors.grey,

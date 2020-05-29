@@ -63,15 +63,14 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     double _lat = prefs.getDouble('lat')?? 0.0;
     double _long = prefs.getDouble('long')?? 0.0;
+    List<Placemark> _placemark = await Geolocator().placemarkFromCoordinates(_lat, _long);
     setState(() {
       lat = _lat;
       long = _long;
       isGuest = prefs.getBool('isGuest')??false;
-    });
-    List<Placemark> _placemark = await Geolocator().placemarkFromCoordinates(_lat, _long);
-    setState(() {
       addresses = _placemark;
     });
+
     print('Address: '+ _placemark[0].name +', '+ _placemark[0].administrativeArea+', '+ _placemark[0].locality + ', '+ _placemark[0].subLocality+', '
         + _placemark[0].subAdministrativeArea +', '+ _placemark[0].country+ ', '+ _placemark[0].postalCode);
 
