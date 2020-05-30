@@ -4,18 +4,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Enquire/EnquireServicePage.dart';
 
-class ViewProductPage extends StatefulWidget {
+class ViewServicePage extends StatefulWidget {
   Map<String, dynamic> postMap;
   String id;
 
-  ViewProductPage({this.postMap, this.id});
+  ViewServicePage({this.postMap, this.id});
 
   @override
-  _ViewProductPageState createState() => _ViewProductPageState();
+  _ViewServicePageState createState() => _ViewServicePageState();
 }
 
-class _ViewProductPageState extends State<ViewProductPage> {
+class _ViewServicePageState extends State<ViewServicePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   FirebaseUser user;
 
@@ -61,7 +62,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
                       child: Container(
                           width: screenWidth,
                           height: 280,
-                          child: Image.network(widget.postMap["product_image_url"][0], fit: BoxFit.fill,)
+                          child: Image.network(widget.postMap["service_image_url"][0], fit: BoxFit.fill,)
                       ),
                     ),
                     Container(
@@ -98,12 +99,19 @@ class _ViewProductPageState extends State<ViewProductPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          RaisedButton(child: Text('Buy'), onPressed: (){
+                          widget.postMap['buy_enable']? RaisedButton(child: Text('Buy'), onPressed: (){
 
-                          },),
-                          RaisedButton(child: Text('Enquire'), onPressed: (){
-
-                          },),
+                          },): Container(),
+                          widget.postMap['enquire_enable']? RaisedButton(child: Text('Book'), onPressed: (){
+                            Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context)=> EnquireServicePage(
+                                      id: widget.id,
+                                      postMap: widget.postMap,
+                                    )
+                                )
+                            );
+                          },): Container(),
                         ],
                       ),
                       Divider(),

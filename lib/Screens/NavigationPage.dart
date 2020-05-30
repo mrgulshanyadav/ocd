@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ocd/Screens/DukaanPage.dart';
+import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/DukaanPage.dart';
 import './AddPostPage.dart';
 import './HomePage.dart';
 import './RecommendationsPage.dart';

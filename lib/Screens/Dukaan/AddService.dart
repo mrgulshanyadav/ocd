@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
@@ -12,12 +13,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ocd/Screens/Vendor/Model/CollaborateWithOCDForm.dart';
 import 'package:ocd/Screens/Vendor/Controller/CollaborateWithOCDFormController.dart';
 
-class AddProduct extends StatefulWidget {
+class AddService extends StatefulWidget {
   @override
-  _AddProductState createState() => _AddProductState();
+  _AddServiceState createState() => _AddServiceState();
 }
 
-class _AddProductState extends State<AddProduct> {
+class _AddServiceState extends State<AddService> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
   String title, description, price;
@@ -96,8 +97,9 @@ class _AddProductState extends State<AddProduct> {
     double screenHeight = MediaQuery.of(context).size.height;
     final orientation = MediaQuery.of(context).orientation;
 
+
     return Scaffold(
-      appBar: AppBar(title: Text("Add Product"),),
+      appBar: AppBar(title: Text("Add Service"),),
       key: _scaffoldKey,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -113,14 +115,14 @@ class _AddProductState extends State<AddProduct> {
                     height: 150,
                     margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      border: Border.all(style: BorderStyle.solid, width: 1, color: Colors.black54),
+                        border: Border.all(style: BorderStyle.solid, width: 1, color: Colors.black54),
                     ),
                     child:Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         FlatButton(
-                          child: Text('Upload Product Image', style: TextStyle(color: Colors.black54), textAlign: TextAlign.center,),
+                          child: Text('Upload Service Image', style: TextStyle(color: Colors.black54), textAlign: TextAlign.center,),
                           onPressed: (){
                             if(_image.length<5){
                               getImage(context);
@@ -134,7 +136,6 @@ class _AddProductState extends State<AddProduct> {
                   ),
                 ),
                 _image.length>0? Container(
-                  width: screenWidth,
                   child: GridView.builder(
                       itemCount: _image.length,
                       shrinkWrap: true,
@@ -145,12 +146,11 @@ class _AddProductState extends State<AddProduct> {
                         return Container(
                           height: 30,
                           width: screenWidth/2-10,
-                          padding: EdgeInsets.all(10),
                           child: Stack(
                             alignment: Alignment.topRight,
                             children: <Widget>[
                               Container(
-                                  alignment: Alignment.center,
+                                alignment: Alignment.center,
                                   child: Image.file(_image[index], fit: BoxFit.contain,)
                               ),
                               Container(
@@ -194,12 +194,13 @@ class _AddProductState extends State<AddProduct> {
                 Container(
                   padding: EdgeInsets.all(10),
                   child: TextField(
+                    maxLines: 5,
                     decoration: InputDecoration(
-                        hintText: 'Description',
-                        labelText: 'Description',
+                        hintText: 'Services included',
+                        labelText: 'Services included',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+                        ),
                     ),
                     onChanged: (input){
                       setState(() {
@@ -239,7 +240,7 @@ class _AddProductState extends State<AddProduct> {
                       // todo: save into excel sheet online
 
                       if(_image.length<1){
-                        _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Select Atleast 1 Product Image!')));
+                      _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Select Atleast 1 Service Image!')));
                       }else if(title.isEmpty){
                         _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Enter Title!')));
                       }else if(description.isEmpty){
@@ -256,12 +257,12 @@ class _AddProductState extends State<AddProduct> {
 
                         // todo: save product in database
 
-                        List<String> product_image_url = new List();
 
+                        List<String> service_image_url = new List();
                         for(int i=0;i<_image.length;i++){
 
                           String file_name = DateTime.now().toIso8601String()+i.toString()+'.jpg';
-                          final StorageReference storageReference = FirebaseStorage().ref().child('Product_Images/'+file_name);
+                          final StorageReference storageReference = FirebaseStorage().ref().child('Service_Images/'+file_name);
 
                           final StorageUploadTask uploadTask = storageReference.putData(_image[i].readAsBytesSync());
 
@@ -272,7 +273,7 @@ class _AddProductState extends State<AddProduct> {
                             // subscription as StreamBuilder handles this automatically.
 
                             // Here, every StorageTaskEvent concerning the upload is printed to the logs.
-                            print('EVENT ${event.type}');
+                            print('SERVICE ${event.type}');
                           });
 
                           // Cancel your subscription when done.
@@ -280,23 +281,25 @@ class _AddProductState extends State<AddProduct> {
                           streamSubscription.cancel();
 
                           await storageReference.getDownloadURL().then((val){
-                            product_image_url.add(val);
+                            service_image_url.add(val);
                           });
 
                         }
 
 
                         Map<String,dynamic> userMap = new Map();
-                        userMap.putIfAbsent("product_image_url", ()=> product_image_url);
+                        userMap.putIfAbsent("service_image_url", ()=> service_image_url);
                         userMap.putIfAbsent("title", ()=> title);
                         userMap.putIfAbsent("description", ()=> description);
                         userMap.putIfAbsent("price", ()=> price);
                         userMap.putIfAbsent("added_by", ()=> user.uid);
+                        userMap.putIfAbsent("buy_enable", ()=> false);
+                        userMap.putIfAbsent("enquire_enable", ()=> true);
 
-                        Firestore.instance.collection("Products").add(userMap).whenComplete(() async {
-                          _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Product Added!')));
+                        Firestore.instance.collection("Services").add(userMap).whenComplete(() async {
+                          _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Service Added!')));
 
-                          print('product added to firestore----------------------->>>>>>>>>>>>>>>>>>>>>>>>');
+                          print('service added to firestore----------------------->>>>>>>>>>>>>>>>>>>>>>>>');
                           setState(() {
                             isLoading = false;
                           });
@@ -308,13 +311,13 @@ class _AddProductState extends State<AddProduct> {
                             price = '';
                           });
 
-
                         }).catchError((error){
                           setState(() {
                             isLoading = false;
                           });
                           print("Error: "+error.toString());
                         });
+
 
                       }
 
