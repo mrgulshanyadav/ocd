@@ -292,7 +292,7 @@ class _AddProductState extends State<AddProduct> {
                         userMap.putIfAbsent("description", ()=> description);
                         userMap.putIfAbsent("price", ()=> price);
                         userMap.putIfAbsent("added_by", ()=> user.uid);
-                        userMap.putIfAbsent("buy_enable", ()=> true);
+                        userMap.putIfAbsent("buy_enable", ()=> false);
                         userMap.putIfAbsent("enquire_enable", ()=> true);
 
                         Firestore.instance.collection("Products").add(userMap).whenComplete(() async {
