@@ -93,13 +93,13 @@ class _ViewServicePageState extends State<ViewServicePage> {
                   child: Column(
                     children: <Widget>[
                       Divider(),
-                      Row(
+                      widget.postMap['buy_enable']? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          widget.postMap['buy_enable']? RaisedButton(child: Text('Buy'), onPressed: (){
+                          RaisedButton(child: Text('Buy'), onPressed: (){
 
-                          },): Container(),
-                          widget.postMap['enquire_enable']? RaisedButton(child: Text('Book'), onPressed: (){
+                          },),
+                          widget.postMap['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: (){
                             Navigator.of(context).push(
                                 MaterialPageRoute(
                                     builder: (context)=> EnquireServicePage(
@@ -108,7 +108,22 @@ class _ViewServicePageState extends State<ViewServicePage> {
                                     )
                                 )
                             );
-                          },): Container(),
+                          },): Visibility(visible: false, child: Container(),),
+                        ],
+                      ):
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          widget.postMap['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: (){
+                            Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context)=> EnquireServicePage(
+                                      id: widget.id,
+                                      postMap: widget.postMap,
+                                    )
+                                )
+                            );
+                          },): Visibility(visible: false, child: Container(),),
                         ],
                       ),
                       Divider(),
