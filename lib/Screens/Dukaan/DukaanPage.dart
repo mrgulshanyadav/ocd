@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ocd/Screens/Dukaan/ViewServicePage.dart';
+import 'package:ocd/Screens/Enquire/Controller/EnquireProductFormController.dart';
 import 'package:ocd/Screens/Enquire/EnquireProductPage.dart';
 import 'package:ocd/Screens/Enquire/EnquireServicePage.dart';
+import 'package:ocd/Screens/Enquire/Model/EnquireProductForm.dart';
 import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/ViewProductPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +18,7 @@ class DukaanPage extends StatefulWidget {
 }
 
 class _DukaanPageState extends State<DukaanPage> {
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   FirebaseUser user;
   List<Map<String,dynamic>> productListMap;
   List productKeyLists;
@@ -56,6 +59,7 @@ class _DukaanPageState extends State<DukaanPage> {
     return !isGuest? DefaultTabController(
       length: 2,
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Dukaan'),
           centerTitle: true,
@@ -127,14 +131,17 @@ class _DukaanPageState extends State<DukaanPage> {
 
                                         },): Container(),
                                         productListMap[index]['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: (){
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context)=> EnquireProductPage(
-                                                    id: productKeyLists[index],
-                                                    postMap: productListMap[index],
-                                                  )
-                                              )
-                                          );
+
+                                          saveProductDataToExcelSheet(productKeyLists[index]);
+
+//                                          Navigator.of(context).push(
+//                                              MaterialPageRoute(
+//                                                  builder: (context)=> EnquireProductPage(
+//                                                    id: productKeyLists[index],
+//                                                    postMap: productListMap[index],
+//                                                  )
+//                                              )
+//                                          );
                                         },): Container(),
                                       ],
                                     ),
@@ -208,15 +215,18 @@ class _DukaanPageState extends State<DukaanPage> {
                                         serviceListMap[index]['buy_enable']? RaisedButton(child: Text('Buy'), onPressed: (){
 
                                         },): Container(),
-                                        serviceListMap[index]['enquire_enable']? RaisedButton(child: Text('Book'), onPressed: (){
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context)=> EnquireServicePage(
-                                                    id: serviceKeyLists[index],
-                                                    postMap: serviceListMap[index],
-                                                  )
-                                              )
-                                          );
+                                        serviceListMap[index]['enquire_enable']? RaisedButton(child: Text('Book'), onPressed: () async {
+
+                                          saveServiceDataToExcelSheet(serviceKeyLists[index]);
+
+//                                          Navigator.of(context).push(
+//                                              MaterialPageRoute(
+//                                                  builder: (context)=> EnquireServicePage(
+//                                                    id: serviceKeyLists[index],
+//                                                    postMap: serviceListMap[index],
+//                                                  )
+//                                              )
+//                                          );
                                         },): Container(),
                                       ],
                                     ),
@@ -295,6 +305,103 @@ class _DukaanPageState extends State<DukaanPage> {
 
 
     return list;
+  }
+
+  void saveServiceDataToExcelSheet(String id) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+
+    String name, email_id, phone_number;
+    await Firestore.instance.collection("Users").document(user.uid).get().then((DocumentSnapshot snapshot) async {
+      name = snapshot.data['name'];
+      email_id = snapshot.data['email'];
+      phone_number = snapshot.data['mobile'];
+    });
+
+    EnquireProductForm feedbackForm = EnquireProductForm(
+        name,
+        email_id,
+        phone_number,
+        '',
+        id
+    );
+
+    EnquireProductFormController formController = EnquireProductFormController((String response) {
+      print("Response: $response");
+      if (response == EnquireProductFormController.STATUS_SUCCESS) {
+        // Feedback is saved succesfully in Google Sheets.
+//                                setState(() {
+//                                  isLoading = false;
+//                                });
+        _showSnackbar("Enquiry Submitted");
+//        Future.delayed(Duration(seconds: 3),(){
+//          Navigator.pop(context);
+//        });
+      } else {
+        // Error Occurred while saving data in Google Sheets.
+//                                setState(() {
+//                                  isLoading = false;
+//                                });
+        _showSnackbar("Error Occurred!");
+      }
+    }
+    );
+
+    _showSnackbar("Submitting Enquiry");
+
+    // Submit 'feedbackForm' and save it in Google Sheets.
+    formController.submitForm(feedbackForm);
+  }
+
+  void saveProductDataToExcelSheet(String id) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+
+    String name, email_id, phone_number;
+    await Firestore.instance.collection("Users").document(user.uid).get().then((DocumentSnapshot snapshot) async {
+      name = snapshot.data['name'];
+      email_id = snapshot.data['email'];
+      phone_number = snapshot.data['mobile'];
+    });
+
+    EnquireProductForm feedbackForm = EnquireProductForm(
+        name,
+        email_id,
+        phone_number,
+        '',
+        id
+    );
+
+    EnquireProductFormController formController = EnquireProductFormController((String response) {
+      print("Response: $response");
+      if (response == EnquireProductFormController.STATUS_SUCCESS) {
+        // Feedback is saved succesfully in Google Sheets.
+//        setState(() {
+//          isLoading = false;
+//        });
+        _showSnackbar("Enquiry Submitted");
+//        Future.delayed(Duration(seconds: 3),(){
+//          Navigator.pop(context);
+//        });
+      } else {
+        // Error Occurred while saving data in Google Sheets.
+//        setState(() {
+//          isLoading = false;
+//        });
+        _showSnackbar("Error Occurred!");
+      }
+    }
+    );
+
+    _showSnackbar("Submitting Enquiry");
+
+    // Submit 'feedbackForm' and save it in Google Sheets.
+    formController.submitForm(feedbackForm);
+  }
+
+
+  // Method to show snackbar with 'message'.
+  _showSnackbar(String message) {
+    final snackBar = SnackBar(content: Text(message));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
 

@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Screens/Enquire/Controller/EnquireProductFormController.dart';
 import 'package:ocd/Screens/Enquire/EnquireProductPage.dart';
+import 'package:ocd/Screens/Enquire/Model/EnquireProductForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ViewProductPage extends StatefulWidget {
@@ -100,14 +103,16 @@ class _ViewProductPageState extends State<ViewProductPage> {
 
                           },),
                           widget.postMap['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: (){
-                            Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context)=> EnquireProductPage(
-                                      id: widget.id,
-                                      postMap: widget.postMap,
-                                    )
-                                )
-                            );
+
+                            saveProductDataToExcelSheet();
+//                            Navigator.of(context).push(
+//                                MaterialPageRoute(
+//                                    builder: (context)=> EnquireProductPage(
+//                                      id: widget.id,
+//                                      postMap: widget.postMap,
+//                                    )
+//                                )
+//                            );
                           },): Visibility(visible: false, child: Container(),),
                         ],
                       ):
@@ -115,14 +120,16 @@ class _ViewProductPageState extends State<ViewProductPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           widget.postMap['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: (){
-                            Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context)=> EnquireProductPage(
-                                      id: widget.id,
-                                      postMap: widget.postMap,
-                                    )
-                                )
-                            );
+
+                            saveProductDataToExcelSheet();
+//                            Navigator.of(context).push(
+//                                MaterialPageRoute(
+//                                    builder: (context)=> EnquireProductPage(
+//                                      id: widget.id,
+//                                      postMap: widget.postMap,
+//                                    )
+//                                )
+//                            );
                           },): Visibility(visible: false, child: Container(),),
                         ],
                       ),
@@ -138,4 +145,56 @@ class _ViewProductPageState extends State<ViewProductPage> {
       ),
     );
   }
+
+  void saveProductDataToExcelSheet() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+
+    String name, email_id, phone_number;
+    await Firestore.instance.collection("Users").document(user.uid).get().then((DocumentSnapshot snapshot) async {
+      name = snapshot.data['name'];
+      email_id = snapshot.data['email'];
+      phone_number = snapshot.data['mobile'];
+    });
+
+    EnquireProductForm feedbackForm = EnquireProductForm(
+        name,
+        email_id,
+        phone_number,
+        '',
+        widget.id
+    );
+
+    EnquireProductFormController formController = EnquireProductFormController((String response) {
+      print("Response: $response");
+      if (response == EnquireProductFormController.STATUS_SUCCESS) {
+        // Feedback is saved succesfully in Google Sheets.
+//        setState(() {
+//          isLoading = false;
+//        });
+        _showSnackbar("Enquiry Submitted");
+//        Future.delayed(Duration(seconds: 3),(){
+//          Navigator.pop(context);
+//        });
+      } else {
+        // Error Occurred while saving data in Google Sheets.
+//        setState(() {
+//          isLoading = false;
+//        });
+        _showSnackbar("Error Occurred!");
+      }
+    }
+    );
+
+    _showSnackbar("Submitting Enquiry");
+
+    // Submit 'feedbackForm' and save it in Google Sheets.
+    formController.submitForm(feedbackForm);
+  }
+
+  // Method to show snackbar with 'message'.
+  _showSnackbar(String message) {
+    final snackBar = SnackBar(content: Text(message));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
 }
