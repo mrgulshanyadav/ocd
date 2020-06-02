@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:ocd/Screens/Enquire/EnquireServicePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Enquire/EnquireServicePage.dart';
 
 class ViewServicePage extends StatefulWidget {
   Map<String, dynamic> postMap;
@@ -62,7 +59,7 @@ class _ViewServicePageState extends State<ViewServicePage> {
                       child: Container(
                           width: screenWidth,
                           height: 280,
-                          child: Image.network(widget.postMap["service_image_url"][0], fit: BoxFit.fill,)
+                          child: Image.network(widget.postMap["service_image_url"][0], fit: BoxFit.cover,)
                       ),
                     ),
                     Container(

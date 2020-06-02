@@ -27,7 +27,6 @@ class _NavigationPageState extends State<NavigationPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        resizeToAvoidBottomPadding: false,
         body :_children[_currentIndex],
         bottomNavigationBar: SizedBox(
           height: 55,

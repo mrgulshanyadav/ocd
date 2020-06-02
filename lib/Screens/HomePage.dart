@@ -8,9 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:ocd/Screens/AboutUs.dart';
 import 'package:ocd/Screens/AddEventPage.dart';
-import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/AddProduct.dart';
+import '../Screens/Dukaan/AddProductPage.dart';
 import 'package:ocd/Screens/AddRestaurantPage.dart';
-import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/AddService.dart';
+import '../Screens/Dukaan/AddServicePage.dart';
 import 'package:ocd/Screens/AnalysisPage.dart';
 import 'package:ocd/Screens/EventsListPage.dart';
 import 'package:ocd/Screens/Vendor/VendorPage.dart';
@@ -226,20 +226,20 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Visibility(
-              visible: !isGuest? true: false,
+              visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false,
               child: ListTile(
                 title: Text('Add Product'),
                 onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddProduct()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddProductPage()));
                 },
               ),
             ),
             Visibility(
-              visible: !isGuest? true: false,
+              visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false,
               child: ListTile(
                 title: Text('Add Service'),
                 onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddService()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddServicePage()));
                 },
               ),
             ),

@@ -1,26 +1,14 @@
-import 'dart:math' show cos, sqrt, asin;
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart';
-import 'package:ocd/Screens/AddReviewPage.dart';
-import 'package:ocd/Screens/Dukaan/Enquire/EnquireProductPage.dart';
-import 'package:ocd/Screens/Dukaan/Enquire/EnquireServicePage.dart';
 import 'package:ocd/Screens/Dukaan/ViewServicePage.dart';
-import 'package:ocd/Screens/ReadReviewsPage.dart';
+import 'package:ocd/Screens/Enquire/EnquireProductPage.dart';
+import 'package:ocd/Screens/Enquire/EnquireServicePage.dart';
 import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/ViewProductPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../AddEventReviewPage.dart';
 import '../Login.dart';
-import '../RatingsAnalysis.dart';
-import '../ReadEventReviewsPage.dart';
-import '../ViewPostPage.dart';
-import 'package:http/http.dart' as http;
 
 class DukaanPage extends StatefulWidget {
   @override
