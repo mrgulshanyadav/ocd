@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:ocd/Constants.dart';
 import 'package:ocd/Screens/AboutUs.dart';
 import 'package:ocd/Screens/AddEventPage.dart';
 import '../Screens/Dukaan/AddProductPage.dart';
@@ -179,93 +180,100 @@ class _HomePageState extends State<HomePage> {
             Container(
               height: 150,
               padding: EdgeInsets.all(10),
-              color: Colors.red[600],
+              color: Theme.of(context).primaryColor,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     CircleAvatar(
-                      radius: 46,
+                      radius: 56,
                       backgroundColor: Colors.white,
                       backgroundImage: NetworkImage(image_url??'http://google.com'),
                     ),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      child: Text(user_name??'', style: TextStyle(color: Colors.white),),
-                    )
+//                    Container(
+//                      padding: EdgeInsets.all(5),
+//                      child: Text(user_name??'', style: TextStyle(color: Colors.white),),
+//                    )
                   ],
                 ),
               ),
             ),
-            Visibility(visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false, child: ListTile(
-              title: Text('Add Event'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddEventPage()));
-              },
-            ),),
-            Visibility(visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false, child: ListTile(
-              title: Text('Add Restaurant'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddRestaurantPage()));
-              },
-            ),),
-            ListTile(
-              title: Text('Events'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EventsListPage()));
-              },
-            ),
-            Visibility(
-              visible: !isGuest? true: false,
-              child: ListTile(
-                title: Text('Vendor'),
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorPage()));
-                },
+            Container(
+              color: Theme.of(context).primaryColor,
+              child: Column(
+                children: <Widget>[
+                  Visibility(visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false, child: ListTile(
+                    title: Text('Add Event', style: TextStyle(color: Colors.white),),
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddEventPage()));
+                    },
+                  ),),
+                  Visibility(visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false, child: ListTile(
+                    title: Text('Add Restaurant', style: TextStyle(color: Colors.white),),
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddRestaurantPage()));
+                    },
+                  ),),
+                  ListTile(
+                    title: Text('Events', style: TextStyle(color: Colors.white),),
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> EventsListPage()));
+                    },
+                  ),
+                  Visibility(
+                    visible: !isGuest? true: false,
+                    child: ListTile(
+                      title: Text('Vendor', style: TextStyle(color: Colors.white),),
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorPage()));
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false,
+                    child: ListTile(
+                      title: Text('Add Product', style: TextStyle(color: Colors.white),),
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddProductPage()));
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false,
+                    child: ListTile(
+                      title: Text('Add Service', style: TextStyle(color: Colors.white),),
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddServicePage()));
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: !isGuest? true: false,
+                    child: ListTile(
+                      title: Text('Analysis', style: TextStyle(color: Colors.white),),
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AnalysisPage()));
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: !isGuest? true: false,
+                    child: ListTile(
+                      title: Text('Collab as Blogger', style: TextStyle(color: Colors.white),),
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CollabAsBlogger()));
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: Text('About us', style: TextStyle(color: Colors.white),),
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AboutUs()));
+                    },
+                  ),
+                ],
               ),
-            ),
-            Visibility(
-              visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false,
-              child: ListTile(
-                title: Text('Add Product'),
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddProductPage()));
-                },
-              ),
-            ),
-            Visibility(
-              visible: user_email.toLowerCase()=='reachocddelhi@gmail.com'? true:false,
-              child: ListTile(
-                title: Text('Add Service'),
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddServicePage()));
-                },
-              ),
-            ),
-            Visibility(
-              visible: !isGuest? true: false,
-              child: ListTile(
-                title: Text('Analysis'),
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AnalysisPage()));
-                },
-              ),
-            ),
-            Visibility(
-              visible: !isGuest? true: false,
-              child: ListTile(
-                title: Text('Collab as Blogger'),
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CollabAsBlogger()));
-                },
-              ),
-            ),
-            ListTile(
-              title: Text('About us'),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AboutUs()));
-              },
             ),
           ],
         ),
@@ -274,14 +282,22 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: <Widget>[
             Container(
-              width: screenWidth,
-              padding: EdgeInsets.all(10),
+//              width: screenWidth,
+              margin: EdgeInsets.fromLTRB(25,10,25,10),
+              decoration: new BoxDecoration(
+                color: Constants().postBackgroundColor,
+                shape: BoxShape.rectangle,
+                borderRadius: new BorderRadius.all(
+                  Radius.circular(9)
+                ),
+              ),
               child: TextField(
                 decoration: InputDecoration(
                     hintText: 'Search Post',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
+//                    border: OutlineInputBorder(
+//                      borderRadius: BorderRadius.all(Radius.circular(10)),
+//                    ),
+                    border: InputBorder.none,
                     prefixIcon: Icon(Icons.search)
                 ),
                 onChanged: (input){
@@ -361,7 +377,8 @@ class _HomePageState extends State<HomePage> {
                               },
                               child: Card(
                                 elevation: 3,
-                                margin: EdgeInsets.all(10),
+                                margin: EdgeInsets.fromLTRB(25,10,25,10),
+                                color: Constants().postBackgroundColor,
                                 child: Container(
                                   padding: EdgeInsets.all(5),
                                   width: MediaQuery.of(context).size.width,
@@ -373,9 +390,12 @@ class _HomePageState extends State<HomePage> {
                                         Hero(
                                           tag: keyLists[index].toString(),
                                           child: Container(width: screenWidth - 30,
-                                              height: 250,
+                                              height: screenWidth - 230,
                                               padding: EdgeInsets.only(top: 3, bottom: 3),
-                                              child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.fill,)
+                                              child: ClipRRect(
+                                                  borderRadius: BorderRadius.all(Radius.circular(9)),
+                                                  child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.cover,)
+                                              )
                                           ),
                                         ),
                                         Row(

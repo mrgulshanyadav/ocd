@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Constants.dart';
 import 'VendorSellServiceProduct.dart';
 import 'VendorCollaborateWithOCD.dart';
 import 'VendorSponsorshipForEvents.dart';
@@ -28,62 +30,74 @@ class _VendorPageState extends State<VendorPage> {
       appBar: AppBar(title: Text('Vendor'),),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              GestureDetector(
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorSellServiceProduct()));
-                },
-                child: Container(
-                  width: screenWidth,
-                  height: screenHeight/3 - 100,
-                  padding: EdgeInsets.all(16),
-                  margin: EdgeInsets.all(16),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      gradient: LinearGradient(colors: [Colors.redAccent, Colors.red[200]])
+          child: Container(
+            height: screenHeight-80,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/4.jpg"),
+                fit: BoxFit.fill,
+              )
+            ),
+            child: Column(
+//              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(height: 30,),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorSellServiceProduct()));
+                  },
+                  child: Container(
+                    width: screenWidth,
+                    height: 90,
+                    padding: EdgeInsets.all(16),
+                    margin: EdgeInsets.all(16),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
+                    child: Text('Sell Service/Product', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 26), textAlign: TextAlign.center),
                   ),
-                  child: Text('Sell Service/Product', style: TextStyle(color: Colors.white, fontSize: 30), textAlign: TextAlign.center),
                 ),
-              ),
-              GestureDetector(
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorCollaborateWithOCD()));
-                },
-                child: Container(
-                  width: screenWidth,
-                  height: screenHeight/3 - 100,
-                  padding: EdgeInsets.all(16),
-                  margin: EdgeInsets.all(16),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      gradient: LinearGradient(colors: [Colors.redAccent, Colors.red[200]])
+                SizedBox(height: 30,),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorCollaborateWithOCD()));
+                  },
+                  child: Container(
+                    width: screenWidth,
+                    height: 90,
+                    padding: EdgeInsets.all(16),
+                    margin: EdgeInsets.all(16),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
+                    child: Text('Collaborate With OCD for Events', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 26), textAlign: TextAlign.center),
                   ),
-                  child: Text('Collaborate with OCD for events', style: TextStyle(color: Colors.white, fontSize: 30), textAlign: TextAlign.center),
                 ),
-              ),
-              GestureDetector(
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorSponsorshipForEvents()));
-                },
-                child: Container(
-                  width: screenWidth,
-                  height: screenHeight/3 - 100,
-                  padding: EdgeInsets.all(16),
-                  margin: EdgeInsets.all(16),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      gradient: LinearGradient(colors: [Colors.redAccent, Colors.red[200]])
+                SizedBox(height: 30,),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> VendorSponsorshipForEvents()));
+                  },
+                  child: Container(
+                    width: screenWidth,
+                    height: 90,
+                    padding: EdgeInsets.all(16),
+                    margin: EdgeInsets.all(16),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
+                    child: Text('Sponsorship for events', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 26), textAlign: TextAlign.center,),
                   ),
-                  child: Text('Sponsorship for events', style: TextStyle(color: Colors.white, fontSize: 30), textAlign: TextAlign.center,),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

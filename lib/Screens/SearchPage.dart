@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ocd/Screens/RatingsAnalysis.dart';
 import 'package:ocd/Screens/ReadReviewsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Constants.dart';
 import 'AddReviewPage.dart';
 
 class SearchPage extends StatefulWidget {
@@ -53,15 +54,23 @@ class _SearchPageState extends State<SearchPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              width: screenWidth,
-              padding: EdgeInsets.all(10),
+//              width: screenWidth,
+              margin: EdgeInsets.fromLTRB(25,10,25,10),
+              decoration: new BoxDecoration(
+                color: Constants().postBackgroundColor,
+                shape: BoxShape.rectangle,
+                borderRadius: new BorderRadius.all(
+                  Radius.circular(9)
+                ),
+              ),
               child: TextField(
                 decoration: InputDecoration(
                     hintText: 'Enter Restaurant Name or Place',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                  prefixIcon: Icon(Icons.search)
+//                    border: OutlineInputBorder(
+//                      borderRadius: BorderRadius.all(Radius.circular(10)),
+//                    ),
+                    border: InputBorder.none,
+                    prefixIcon: Icon(Icons.search)
                 ),
                 onChanged: (input){
                   setState(() {
@@ -103,7 +112,7 @@ class _SearchPageState extends State<SearchPage> {
                               },
                               child: Card(
                                 elevation: 3,
-                                margin: EdgeInsets.all(10),
+                                margin: EdgeInsets.fromLTRB(25,10,25,10),
                                 child: Container(
                                   padding: EdgeInsets.all(10),
                                   width: MediaQuery.of(context).size.width,
@@ -118,7 +127,7 @@ class _SearchPageState extends State<SearchPage> {
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: <Widget>[
-                                                Container(width: screenWidth - 110,
+                                                Container(width: screenWidth - 140,
                                                     padding: EdgeInsets.all(5),
                                                     child: Text(listMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
                                                 GestureDetector(
@@ -135,48 +144,94 @@ class _SearchPageState extends State<SearchPage> {
                                                 Icon(Icons.star),
                                               ],
                                             ),
-                                            Container(width: screenWidth - 40,
-                                                height: 250,
+                                            Container(width: screenWidth - 70,
+                                                height: screenWidth - 230,
                                                 padding: EdgeInsets.only(top: 6, bottom: 3),
-                                                child: Image.network(listMap[index]["image"], fit: BoxFit.fill,)),
+                                                child: ClipRRect(
+                                                    borderRadius: BorderRadius.all(Radius.circular(9)),
+                                                    child: Image.network(listMap[index]["image"], fit: BoxFit.cover))),
                                             Container(
-                                              width: screenWidth-40,
+                                              width: screenWidth-70,
                                               child: Text(
                                                 'Cuisines: '+ listMap[index]["cuisines"].toString().replaceAll('[', '').replaceAll(']', ''),
                                                 softWrap: true,
                                               ),
                                             ),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: <Widget>[
-                                                Visibility(
-                                                  visible: !isGuest? true: false,
-                                                  child: Container(width: 160,
+                                            !isGuest?
+                                            Container(
+                                              width: screenWidth-70,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Visibility(
+                                                    child: Container(
+                                                        width: 160,
+                                                        padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                        child: RaisedGradientButton(
+                                                          gradient: LinearGradient(
+                                                            begin: FractionalOffset.topCenter,
+                                                            end: FractionalOffset.bottomCenter,
+                                                            colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                                                          ),
+                                                          child: Text("Write Review", style: TextStyle(color: Colors.white),),
+                                                          onPressed: (){
+
+                                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index])));
+
+                                                          },
+                                                        )
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                      width: 160,
                                                       padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                      child: FlatButton(
-                                                        child: Text("Write Review", style: TextStyle(color: Colors.blue),),
+                                                      child: RaisedGradientButton(
+                                                        gradient: LinearGradient(
+                                                          begin: FractionalOffset.topCenter,
+                                                          end: FractionalOffset.bottomCenter,
+                                                          colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                                                        ),
+                                                        child: Text("Read Reviews", style: TextStyle(color: Colors.white),),
                                                         onPressed: (){
 
-                                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: keyLists[index])));
+                                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                              ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
+                                                          ));
 
                                                         },
                                                       )
                                                   ),
-                                                ),
-                                                Container(width: !isGuest? 160: 320,
-                                                    padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                    child: FlatButton(
-                                                      child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
-                                                      onPressed: (){
+                                                ],
+                                              ),
+                                            ):
+                                            Container(
+                                              width: screenWidth-70,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Container(
+                                                      width: 320,
+                                                      padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                      child: RaisedGradientButton(
+                                                        gradient: LinearGradient(
+                                                          begin: FractionalOffset.topCenter,
+                                                          end: FractionalOffset.bottomCenter,
+                                                          colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                                                        ),
+                                                        child: Text("Read Reviews", style: TextStyle(color: Colors.white),),
+                                                        onPressed: (){
 
-                                                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                            ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
-                                                        ));
+                                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                              ReadReviewsPage(rest_id: keyLists[index], name: listMap[index]["name"], avg_rating: listMap[index]["avg_rating"], image: listMap[index]["image"])
+                                                          ));
 
-                                                      },
-                                                    )
-                                                ),
-                                              ],
+                                                        },
+                                                      )
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -237,4 +292,51 @@ class _SearchPageState extends State<SearchPage> {
 
 
 
+}
+
+
+
+class RaisedGradientButton extends StatelessWidget {
+  final Widget child;
+  final Gradient gradient;
+  final double width;
+  final double height;
+  final Function onPressed;
+
+  const RaisedGradientButton({
+    Key key,
+    @required this.child,
+    this.gradient,
+    this.width = double.infinity,
+    this.height = 50.0,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: 40.0,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[500],
+              offset: Offset(0.0, 1.5),
+              blurRadius: 1.5,
+            ),
+          ]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+            onTap: onPressed,
+            child: Center(
+              child: child,
+            )),
+      ),
+    );
+  }
 }

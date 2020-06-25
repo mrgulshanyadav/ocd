@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ocd/Constants.dart';
 import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/DukaanPage.dart';
 import './AddPostPage.dart';
 import './HomePage.dart';
@@ -41,24 +42,24 @@ class _NavigationPageState extends State<NavigationPage> {
             },
             items: [
               BottomNavigationBarItem(
-                icon: new Icon(Icons.home, color: _currentIndex == 0 ? Theme.of(context).primaryColor : Colors.grey,),
-                title: new Text('Home', style: TextStyle(color: _currentIndex == 0 ? Theme.of(context).primaryColor : Colors.grey,),),
+                icon: new Icon(Icons.home, color: _currentIndex == 0 ? Constants().navigationSelectedColor : Colors.grey,),
+                title: new Text('Home', style: TextStyle(color: _currentIndex == 0 ? Constants().navigationSelectedColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
-                icon: new Icon(Icons.search, color: _currentIndex == 1 ? Theme.of(context).primaryColor : Colors.grey,),
-                title: new Text('Search', style: TextStyle(color: _currentIndex == 1 ? Theme.of(context).primaryColor : Colors.grey,),),
+                icon: new Icon(Icons.search, color: _currentIndex == 1 ? Constants().navigationSelectedColor : Colors.grey,),
+                title: new Text('Search', style: TextStyle(color: _currentIndex == 1 ? Constants().navigationSelectedColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
-                icon: new Icon(Icons.star_border, color: _currentIndex == 2 ? Theme.of(context).primaryColor : Colors.grey,),
-                title: new Text('Recommendations', style: TextStyle(color: _currentIndex == 2 ? Theme.of(context).primaryColor : Colors.grey,),),
+                icon: new Icon(Icons.star_border, color: _currentIndex == 2 ? Constants().navigationSelectedColor : Colors.grey,),
+                title: new Text('Recommendations', style: TextStyle(color: _currentIndex == 2 ? Constants().navigationSelectedColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
-                icon: new Icon(Icons.shop, color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),
-                title: new Text('Dukaan', style: TextStyle(color: _currentIndex == 3 ? Theme.of(context).primaryColor : Colors.grey,),),
+                icon: new Icon(Icons.shop, color: _currentIndex == 3 ? Constants().navigationSelectedColor : Colors.grey,),
+                title: new Text('Dukaan', style: TextStyle(color: _currentIndex == 3 ? Constants().navigationSelectedColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
-                icon: new Icon(Icons.person, color: _currentIndex == 4 ? Theme.of(context).primaryColor : Colors.grey,),
-                title: new Text('My Profile', style: TextStyle(color: _currentIndex == 4 ? Theme.of(context).primaryColor : Colors.grey,),),
+                icon: new Icon(Icons.person, color: _currentIndex == 4 ? Constants().navigationSelectedColor : Colors.grey,),
+                title: new Text('My Profile', style: TextStyle(color: _currentIndex == 4 ? Constants().navigationSelectedColor : Colors.grey,),),
               ),
             ],
             fixedColor: Colors.grey,

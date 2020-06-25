@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Constants.dart';
 import 'package:ocd/Screens/Dukaan/ViewServicePage.dart';
 import 'package:ocd/Screens/Enquire/Controller/EnquireProductFormController.dart';
 import 'package:ocd/Screens/Enquire/EnquireProductPage.dart';
@@ -60,15 +61,23 @@ class _DukaanPageState extends State<DukaanPage> {
       length: 2,
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text('Dukaan'),
-          centerTitle: true,
+        backgroundColor: Constants().dukaanBackgroundColor,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(125),
+          child: AppBar(
+            title: Container(
+              height: 150,
+              child: Image.asset("assets/images/dukaanlogo.jpg", fit: BoxFit.scaleDown)
+            ),
+//          Text('Dukaan', style: TextStyle(color: Constants().dukaanFontColor),),
+            centerTitle: true,
 //          actions: <Widget>[IconButton(icon: Icon(Icons.more_vert), onPressed: (){},)],
-          backgroundColor: Colors.redAccent,
-          bottom: TabBar(tabs: [
-            Tab(child: Text('Products'),),
-            Tab(child: Text('Services'),),
-          ]),
+            backgroundColor: Constants().dukaanBackgroundColor,
+            bottom: TabBar(tabs: [
+              Tab(child: Text('Products', style: TextStyle(color: Constants().dukaanFontColor),),),
+              Tab(child: Text('Ocdcurates', style: TextStyle(color: Constants().dukaanFontColor),),),
+            ]),
+          ),
         ),
         body: TabBarView(
           children: <Widget>[
@@ -86,10 +95,15 @@ class _DukaanPageState extends State<DukaanPage> {
 
                   return Container(
                     margin: EdgeInsets.only(top: 10),
-                    child: ListView.builder(
+                    color: Colors.transparent,
+                    child: GridView.builder(
                         itemCount: productListMap.length,
                         shrinkWrap: true,
-//                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (orientation == Orientation.portrait) ? 1 : 2,),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3,
+                          childAspectRatio: MediaQuery.of(context).size.width /
+                              (MediaQuery.of(context).size.height / 1.4),
+                        ),
                         itemBuilder: (context, index){
 
                           return GestureDetector(
@@ -105,46 +119,61 @@ class _DukaanPageState extends State<DukaanPage> {
                             },
                             child: Card(
                               elevation: 2,
+                              color: Colors.transparent,
                               child: Container(
                                 height: 315,
+                                color: Colors.transparent,
                                 margin: EdgeInsets.all(10),
                                 child: Column(
                                   children: <Widget>[
                                     Container(
-                                      alignment: Alignment.topLeft,
-                                      padding: EdgeInsets.all(5),
-                                      child: Text(productListMap[index]['title'], style: TextStyle(fontSize: 22),),
-                                    ),
-                                    Container(
-                                      height: (screenHeight/4)+40,
+                                      height: (screenWidth/2) - 60,
                                       width: screenWidth,
-                                      child: Image.network(
-                                        productListMap[index]['product_image_url'][0],
-                                        fit: BoxFit.cover,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.all(Radius.circular(9)),
+                                        child: Image.network(
+                                          productListMap[index]['product_image_url'][0],
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text('Rs.'+productListMap[index]['price'], style: TextStyle(fontSize: 22),),
-                                        productListMap[index]['buy_enable']? RaisedButton(child: Text('Buy'), onPressed: (){
-
-                                        },): Container(),
-                                        productListMap[index]['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: (){
-
-                                          saveProductDataToExcelSheet(productKeyLists[index]);
-
-//                                          Navigator.of(context).push(
-//                                              MaterialPageRoute(
-//                                                  builder: (context)=> EnquireProductPage(
-//                                                    id: productKeyLists[index],
-//                                                    postMap: productListMap[index],
-//                                                  )
-//                                              )
-//                                          );
-                                        },): Container(),
-                                      ],
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                      padding: EdgeInsets.all(5),
+                                      child: Text(productListMap[index]['title'], style: TextStyle(fontSize: 18, color: Constants().dukaanFontColor),),
                                     ),
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                        padding: EdgeInsets.only(left: 5),
+                                      child: Text('Rs.'+productListMap[index]['price'], style: TextStyle(fontSize: 18, color: Constants().dukaanFontColor),)
+                                    ),
+//                                    Row(
+//                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                      children: <Widget>[
+//                                        productListMap[index]['buy_enable']? RaisedGradientButton(
+//                                          width: 75,
+//                                          gradient: LinearGradient(
+//                                            begin: FractionalOffset.topCenter,
+//                                            end: FractionalOffset.bottomCenter,
+//                                            colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
+//                                          ),
+//                                          child: Text('Buy', style: TextStyle(color: Colors.white),), onPressed: (){
+//
+//                                        },): Container(),
+//                                        productListMap[index]['enquire_enable']? RaisedGradientButton(
+//                                          width: 75,
+//                                          gradient: LinearGradient(
+//                                            begin: FractionalOffset.topCenter,
+//                                            end: FractionalOffset.bottomCenter,
+//                                            colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
+//                                          ),
+//                                          child: Text('Enquire', style: TextStyle(color: Colors.white),), onPressed: (){
+//
+//                                          saveProductDataToExcelSheet(productKeyLists[index]);
+//
+//                                        },): Container(),
+//                                      ],
+//                                    ),
                                   ],
                                 ),
                               ),
@@ -171,10 +200,15 @@ class _DukaanPageState extends State<DukaanPage> {
 
                   return Container(
                     margin: EdgeInsets.only(top: 10),
-                    child: ListView.builder(
+                    color: Colors.transparent,
+                    child: GridView.builder(
                         itemCount: serviceListMap.length,
                         shrinkWrap: true,
-//                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (orientation == Orientation.portrait) ? 1 : 2,),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3,
+                          childAspectRatio: MediaQuery.of(context).size.width /
+                              (MediaQuery.of(context).size.height / 1.4),
+                        ),
                         itemBuilder: (context, index){
 
                           return GestureDetector(
@@ -190,46 +224,71 @@ class _DukaanPageState extends State<DukaanPage> {
                             },
                             child: Card(
                               elevation: 2,
+                              color: Colors.transparent,
                               child: Container(
                                 height: 315,
                                 margin: EdgeInsets.all(10),
+                                color: Colors.transparent,
                                 child: Column(
                                   children: <Widget>[
                                     Container(
-                                      alignment: Alignment.topLeft,
-                                      padding: EdgeInsets.all(5),
-                                      child: Text(serviceListMap[index]['title'], style: TextStyle(fontSize: 22),),
-                                    ),
-                                    Container(
-                                      height: (screenHeight/4)+40,
+                                      height: (screenWidth/2)-60,
                                       width: screenWidth,
-                                      child: Image.network(
-                                        serviceListMap[index]['service_image_url'][0],
-                                        fit: BoxFit.cover,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.all(Radius.circular(9)),
+                                        child: Image.network(
+                                          serviceListMap[index]['service_image_url'][0],
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text('Rs.'+serviceListMap[index]['price'], style: TextStyle(fontSize: 22),),
-                                        serviceListMap[index]['buy_enable']? RaisedButton(child: Text('Buy'), onPressed: (){
-
-                                        },): Container(),
-                                        serviceListMap[index]['enquire_enable']? RaisedButton(child: Text('Book'), onPressed: () async {
-
-                                          saveServiceDataToExcelSheet(serviceKeyLists[index]);
-
-//                                          Navigator.of(context).push(
-//                                              MaterialPageRoute(
-//                                                  builder: (context)=> EnquireServicePage(
-//                                                    id: serviceKeyLists[index],
-//                                                    postMap: serviceListMap[index],
-//                                                  )
-//                                              )
-//                                          );
-                                        },): Container(),
-                                      ],
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                      padding: EdgeInsets.all(5),
+                                      child: Text(serviceListMap[index]['title'], style: TextStyle(fontSize: 18, color: Constants().dukaanFontColor),),
                                     ),
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                        padding: EdgeInsets.only(left: 5),
+                                      child: Text('Rs.'+serviceListMap[index]['price'], style: TextStyle(fontSize: 18, color: Constants().dukaanFontColor),)
+                                    ),
+//                                    Row(
+//                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                      children: <Widget>[
+//                                        serviceListMap[index]['buy_enable']?
+//                                        RaisedGradientButton(
+//                                          width: 75,
+//                                          gradient: LinearGradient(
+//                                            begin: FractionalOffset.topCenter,
+//                                            end: FractionalOffset.bottomCenter,
+//                                            colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
+//                                          ),
+//                                          child: Text('Buy', style: TextStyle(color: Colors.white),), onPressed: (){
+//
+//                                        },): Container(),
+//                                        serviceListMap[index]['enquire_enable']?
+//                                        RaisedGradientButton(
+//                                          width: 75,
+//                                          gradient: LinearGradient(
+//                                            begin: FractionalOffset.topCenter,
+//                                            end: FractionalOffset.bottomCenter,
+//                                            colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
+//                                          ),
+//                                          child: Text('Book', style: TextStyle(color: Colors.white),), onPressed: () async {
+//
+//                                          saveServiceDataToExcelSheet(serviceKeyLists[index]);
+//
+////                                          Navigator.of(context).push(
+////                                              MaterialPageRoute(
+////                                                  builder: (context)=> EnquireServicePage(
+////                                                    id: serviceKeyLists[index],
+////                                                    postMap: serviceListMap[index],
+////                                                  )
+////                                              )
+////                                          );
+//                                        },): Container(),
+//                                      ],
+//                                    ),
                                   ],
                                 ),
                               ),
@@ -405,4 +464,52 @@ class _DukaanPageState extends State<DukaanPage> {
   }
 
 
+}
+
+
+
+
+class RaisedGradientButton extends StatelessWidget {
+  final Widget child;
+  final Gradient gradient;
+  final double width;
+  final double height;
+  final Function onPressed;
+
+  const RaisedGradientButton({
+    Key key,
+    @required this.child,
+    this.gradient,
+    this.width = 75,
+    this.height = 30.0,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: 40.0,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[500],
+              offset: Offset(0.0, 1.5),
+              blurRadius: 1.5,
+            ),
+          ]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+            onTap: onPressed,
+            child: Center(
+              child: child,
+            )),
+      ),
+    );
+  }
 }

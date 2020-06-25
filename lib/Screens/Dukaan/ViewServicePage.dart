@@ -6,6 +6,8 @@ import 'package:ocd/Screens/Enquire/EnquireServicePage.dart';
 import 'package:ocd/Screens/Enquire/Model/EnquireProductForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Constants.dart';
+
 class ViewServicePage extends StatefulWidget {
   Map<String, dynamic> postMap;
   String id;
@@ -46,6 +48,7 @@ class _ViewServicePageState extends State<ViewServicePage> {
 
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Constants().dukaanBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -74,35 +77,50 @@ class _ViewServicePageState extends State<ViewServicePage> {
                             child: Container(
                                 alignment: Alignment.topLeft,
                                 padding: EdgeInsets.all(5),
-                                child: Text(widget.postMap["title"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                child: Text(widget.postMap["title"], style: TextStyle(fontSize: 18, color: Constants().dukaanFontColor), softWrap: true,)),
                           ),
                           Flexible(
                             child: Container(
                                 alignment: Alignment.topRight,
                                 padding: EdgeInsets.all(5),
-                                child: Text('Rs.'+ widget.postMap["price"], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: true,)),
+                                child: Text('Rs.'+ widget.postMap["price"], style: TextStyle(fontSize: 18, color: Constants().dukaanFontColor), softWrap: true,)),
                           ),
                         ],
                       ),
                     ),
-                    Divider(),
+                    Divider(color: Colors.white70,),
                     Container(
                         padding: EdgeInsets.all(10),
-                        child: Text(widget.postMap["description"], style: TextStyle(fontSize: 20, color: Colors.grey[700]), softWrap: true,)),
+                        child: Text(widget.postMap["description"], style: TextStyle(fontSize: 20, color: Constants().dukaanFontColor), softWrap: true,)),
                   ],
                 ),
 
                 Container(
                   child: Column(
                     children: <Widget>[
-                      Divider(),
+                      Divider(color: Colors.white70,),
                       widget.postMap['buy_enable']? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          RaisedButton(child: Text('Buy'), onPressed: (){
+                          RaisedGradientButton(
+                            width: 100,
+                            gradient: LinearGradient(
+                              begin: FractionalOffset.topCenter,
+                              end: FractionalOffset.bottomCenter,
+                              colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
+                            ),
+                            child: Text('Buy', style: TextStyle(color: Colors.white),), onPressed: (){
 
                           },),
-                          widget.postMap['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: (){
+                          widget.postMap['enquire_enable']?
+                          RaisedGradientButton(
+                            width: 100,
+                            gradient: LinearGradient(
+                              begin: FractionalOffset.topCenter,
+                              end: FractionalOffset.bottomCenter,
+                              colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
+                            ),
+                            child: Text('Enquire', style: TextStyle(color: Colors.white),), onPressed: (){
 
                             saveServiceDataToExcelSheet();
 
@@ -120,8 +138,15 @@ class _ViewServicePageState extends State<ViewServicePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          widget.postMap['enquire_enable']? RaisedButton(child: Text('Enquire'), onPressed: () async {
-
+                          widget.postMap['enquire_enable']?
+                          RaisedGradientButton(
+                            width: 100,
+                            gradient: LinearGradient(
+                              begin: FractionalOffset.topCenter,
+                              end: FractionalOffset.bottomCenter,
+                              colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
+                            ),
+                            child: Text('Enquire', style: TextStyle(color: Colors.white),), onPressed: (){
 
                             saveServiceDataToExcelSheet();
 
@@ -137,7 +162,7 @@ class _ViewServicePageState extends State<ViewServicePage> {
                           },): Visibility(visible: false, child: Container(),),
                         ],
                       ),
-                      Divider(),
+                      Divider(color: Colors.white70,),
                     ],
                   ),
                 ),
@@ -201,4 +226,54 @@ class _ViewServicePageState extends State<ViewServicePage> {
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
+}
+
+
+
+
+
+
+class RaisedGradientButton extends StatelessWidget {
+  final Widget child;
+  final Gradient gradient;
+  final double width;
+  final double height;
+  final Function onPressed;
+
+  const RaisedGradientButton({
+    Key key,
+    @required this.child,
+    this.gradient,
+    this.width = double.infinity,
+    this.height = 50.0,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: 40.0,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[500],
+              offset: Offset(0.0, 1.5),
+              blurRadius: 1.5,
+            ),
+          ]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+            onTap: onPressed,
+            child: Center(
+              child: child,
+            )),
+      ),
+    );
+  }
 }

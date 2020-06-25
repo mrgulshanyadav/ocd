@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ocd/Screens/Vendor/Model/CollaborateWithOCDForm.dart';
 import 'package:ocd/Screens/Vendor/Controller/CollaborateWithOCDFormController.dart';
 
+import '../../Constants.dart';
+
 class VendorCollaborateWithOCD extends StatefulWidget {
   @override
   _VendorCollaborateWithOCDState createState() => _VendorCollaborateWithOCDState();
@@ -40,6 +42,9 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(title: Text("Collaborate with OCD"),),
       key: _scaffoldKey,
@@ -53,13 +58,14 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(right: 20, left: 20),
                   child: TextField(
                     decoration: InputDecoration(
                         hintText: 'Company Name',
-                        labelText: 'Company Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+//                        labelText: 'Company Name',
+//                        border: OutlineInputBorder(
+//                          borderRadius: BorderRadius.all(Radius.circular(10)),
+//                        )
                     ),
                     onChanged: (input){
                       setState(() {
@@ -70,13 +76,14 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(right: 20, left: 20),
                   child: TextField(
                     decoration: InputDecoration(
                         hintText: 'Company Link',
-                        labelText: 'Company Link',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+//                        labelText: 'Company Link',
+//                        border: OutlineInputBorder(
+//                          borderRadius: BorderRadius.all(Radius.circular(10)),
+//                        )
                     ),
                     onChanged: (input){
                       setState(() {
@@ -87,13 +94,14 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(right: 20, left: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Event Type',
-                      labelText: 'Event Type',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+//                      labelText: 'Event Type',
+//                      border: OutlineInputBorder(
+//                        borderRadius: BorderRadius.all(Radius.circular(10)),
+//                      ),
                     ),
                     keyboardType: TextInputType.text,
                     maxLines: 1,
@@ -106,13 +114,14 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(right: 20, left: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Phone Number',
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+//                      labelText: 'Phone Number',
+//                      border: OutlineInputBorder(
+//                        borderRadius: BorderRadius.all(Radius.circular(10)),
+//                      ),
                     ),
                     keyboardType: TextInputType.number,
                     maxLines: 1,
@@ -125,13 +134,14 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(right: 20, left: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Email ID',
-                      labelText: 'Email ID',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+//                      labelText: 'Email ID',
+//                      border: OutlineInputBorder(
+//                        borderRadius: BorderRadius.all(Radius.circular(10)),
+//                      ),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     maxLines: 1,
@@ -144,10 +154,15 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
-                  child: !isLoading? RaisedButton(
+                  child: !isLoading? RaisedGradientButton(
                     child: Text("Submit",style: TextStyle(color: Colors.white),),
-                    color: Colors.green,
-                    padding: EdgeInsets.all(15),
+                    width: screenWidth,
+                    height: 50,
+                    gradient: LinearGradient(
+                      begin: FractionalOffset.topCenter,
+                      end: FractionalOffset.bottomCenter,
+                      colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                    ),
                     onPressed: () async {
                       // save into database firebase
 
@@ -206,7 +221,10 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
 
                     },
                   ) : CircularProgressIndicator(),
-                )
+                ),
+                Container(
+                    child: Image.asset("assets/images/1.jpg", fit: BoxFit.cover,)
+                ),
 
               ],
             ),
@@ -222,4 +240,50 @@ class _VendorCollaborateWithOCDState extends State<VendorCollaborateWithOCD> {
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
+}
+
+
+class RaisedGradientButton extends StatelessWidget {
+  final Widget child;
+  final Gradient gradient;
+  final double width;
+  final double height;
+  final Function onPressed;
+
+  const RaisedGradientButton({
+    Key key,
+    @required this.child,
+    this.gradient,
+    this.width = double.infinity,
+    this.height = 50.0,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[500],
+              offset: Offset(0.0, 1.5),
+              blurRadius: 1.5,
+            ),
+          ]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+            onTap: onPressed,
+            child: Center(
+              child: child,
+            )),
+      ),
+    );
+  }
 }

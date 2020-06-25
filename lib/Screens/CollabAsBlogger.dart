@@ -10,6 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Constants.dart';
+
 class CollabAsBlogger extends StatefulWidget {
   @override
   _CollabAsBloggerState createState() => _CollabAsBloggerState();
@@ -42,26 +44,37 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(title: Text("Collab As Blogger"),),
       key: _scaffoldKey,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            margin: EdgeInsets.only(top: 20),
+            alignment: Alignment.topCenter,
+            height: screenHeight,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/3.jpg"),
+                  fit: BoxFit.fill,
+                )
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                   child: TextField(
                     decoration: InputDecoration(
                         hintText: 'First Name',
-                        labelText: 'First Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+//                        labelText: 'First Name',
+//                        border: OutlineInputBorder(
+//                          borderRadius: BorderRadius.all(Radius.circular(10)),
+//                        )
                     ),
                     onChanged: (input){
                       setState(() {
@@ -72,13 +85,14 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   child: TextField(
                     decoration: InputDecoration(
                         hintText: 'Last Name',
-                        labelText: 'Last Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+//                        labelText: 'Last Name',
+//                        border: OutlineInputBorder(
+//                          borderRadius: BorderRadius.all(Radius.circular(10)),
+//                        )
                     ),
                     onChanged: (input){
                       setState(() {
@@ -89,13 +103,14 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Gender',
-                      labelText: 'Gender',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+//                      labelText: 'Gender',
+//                      border: OutlineInputBorder(
+//                        borderRadius: BorderRadius.all(Radius.circular(10)),
+//                      ),
                     ),
                     keyboardType: TextInputType.text,
                     maxLines: 1,
@@ -108,13 +123,14 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Phone Number',
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+//                      labelText: 'Phone Number',
+//                      border: OutlineInputBorder(
+//                        borderRadius: BorderRadius.all(Radius.circular(10)),
+//                      ),
                     ),
                     keyboardType: TextInputType.number,
                     maxLines: 1,
@@ -127,13 +143,14 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Email ID',
-                      labelText: 'Email ID',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+//                      labelText: 'Email ID',
+//                      border: OutlineInputBorder(
+//                        borderRadius: BorderRadius.all(Radius.circular(10)),
+//                      ),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     maxLines: 1,
@@ -146,13 +163,14 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                         hintText: 'Instagram Username',
-                        labelText: 'Instagram Username',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+//                        labelText: 'Instagram Username',
+//                        border: OutlineInputBorder(
+//                          borderRadius: BorderRadius.all(Radius.circular(10)),
+//                        )
                     ),
                     onChanged: (input){
                       setState(() {
@@ -163,13 +181,14 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                         hintText: 'Youtube Link',
-                        labelText: 'Youtube Link',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+//                        labelText: 'Youtube Link',
+//                        border: OutlineInputBorder(
+//                          borderRadius: BorderRadius.all(Radius.circular(10)),
+//                        )
                     ),
                     onChanged: (input){
                       setState(() {
@@ -180,13 +199,14 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   child: TextFormField(
                     decoration: InputDecoration(
                         hintText: 'Facebook Page Link',
-                        labelText: 'Facebook Page Link',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        )
+//                        labelText: 'Facebook Page Link',
+//                        border: OutlineInputBorder(
+//                          borderRadius: BorderRadius.all(Radius.circular(10)),
+//                        )
                     ),
                     onChanged: (input){
                       setState(() {
@@ -197,10 +217,15 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
                 ),
                 Container(
                   padding: EdgeInsets.all(10),
-                  child: !isLoading? RaisedButton(
+                  child: !isLoading? RaisedGradientButton(
                     child: Text("Submit",style: TextStyle(color: Colors.white),),
-                    color: Colors.green,
-                    padding: EdgeInsets.all(15),
+                    width: screenWidth,
+                    height: 50,
+                    gradient: LinearGradient(
+                      begin: FractionalOffset.topCenter,
+                      end: FractionalOffset.bottomCenter,
+                      colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                    ),
                     onPressed: () async {
                       // save into database firebase
 
@@ -261,6 +286,53 @@ class _CollabAsBloggerState extends State<CollabAsBlogger> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+
+class RaisedGradientButton extends StatelessWidget {
+  final Widget child;
+  final Gradient gradient;
+  final double width;
+  final double height;
+  final Function onPressed;
+
+  const RaisedGradientButton({
+    Key key,
+    @required this.child,
+    this.gradient,
+    this.width = double.infinity,
+    this.height = 50.0,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[500],
+              offset: Offset(0.0, 1.5),
+              blurRadius: 1.5,
+            ),
+          ]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+            onTap: onPressed,
+            child: Center(
+              child: child,
+            )),
       ),
     );
   }

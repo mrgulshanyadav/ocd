@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+import 'package:ocd/Constants.dart';
 import 'package:ocd/Screens/AddReviewPage.dart';
 import 'package:ocd/Screens/ReadReviewsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -406,7 +407,8 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                         },
                                         child: Card(
                                           elevation: 3,
-                                          margin: EdgeInsets.all(10),
+                                          color: Constants().postBackgroundColor,
+                                          margin: EdgeInsets.fromLTRB(25,10,25,10),
                                           child: Container(
                                             padding: EdgeInsets.all(5),
                                             width: MediaQuery.of(context).size.width,
@@ -418,9 +420,12 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                   Hero(
                                                     tag: postKeyLists[index].toString(),
                                                     child: Container(width: screenWidth - 30,
-                                                        height: 250,
+                                                        height: screenWidth - 230,
                                                         padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                        child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.fill,)
+                                                        child: ClipRRect(
+                                                          borderRadius: BorderRadius.all(Radius.circular(9)),
+                                                            child: Image.network(postListMap[index]["post_pic"], fit: BoxFit.cover,)
+                                                        )
                                                     ),
                                                   ),
                                                   Row(
@@ -685,7 +690,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                       },
                                       child: Card(
                                         elevation: 3,
-                                        margin: EdgeInsets.all(10),
+                                        margin: EdgeInsets.fromLTRB(25,10,25,10),
                                         child: Container(
                                           padding: EdgeInsets.all(10),
                                           width: MediaQuery.of(context).size.width,
@@ -700,7 +705,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
-                                                        Container(width: screenWidth - 110,
+                                                        Container(width: screenWidth - 140,
                                                             padding: EdgeInsets.all(5),
                                                             child: Text(restaurantListMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
                                                         GestureDetector(
@@ -717,45 +722,60 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                         Icon(Icons.star),
                                                       ],
                                                     ),
-                                                    Container(width: screenWidth - 40,
-                                                        height: 250,
+                                                    Container(width: screenWidth - 70,
+                                                        height: screenWidth - 230,
                                                         padding: EdgeInsets.only(top: 6, bottom: 3),
-                                                        child: Image.network(restaurantListMap[index]["image"], fit: BoxFit.fill,)),
+                                                        child: ClipRRect(
+                                                            borderRadius: BorderRadius.all(Radius.circular(9)),
+                                                            child: Image.network(restaurantListMap[index]["image"], fit: BoxFit.cover,))),
                                                     Container(
-                                                      width: screenWidth-40,
+                                                      width: screenWidth-70,
                                                       child: Text(
                                                         'Cuisines: '+ restaurantListMap[index]["cuisines"].toString().replaceAll('[', '').replaceAll(']', ''),
                                                         softWrap: true,
                                                       ),
                                                     ),
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: <Widget>[
-                                                        Container(width: 160,
-                                                            padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                            child: FlatButton(
-                                                              child: Text("Write Review", style: TextStyle(color: Colors.blue),),
-                                                              onPressed: (){
+                                                    Container(
+                                                      width: screenWidth-70,
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: <Widget>[
+                                                          Container(width: 160,
+                                                              padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                              child: RaisedGradientButton(
+                                                                gradient: LinearGradient(
+                                                                  begin: FractionalOffset.topCenter,
+                                                                  end: FractionalOffset.bottomCenter,
+                                                                  colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                                                                ),
+                                                                child: Text("Write Review", style: TextStyle(color: Colors.white),),
+                                                                onPressed: (){
 
-                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index])));
+                                                                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddReviewPage(rest_id: restaurantKeyLists[index])));
 
-                                                              },
-                                                            )
-                                                        ),
-                                                        Container(width: 160,
-                                                            padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                            child: FlatButton(
-                                                              child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
-                                                              onPressed: (){
+                                                                },
+                                                              )
+                                                          ),
+                                                          Container(width: 160,
+                                                              padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                              child: RaisedGradientButton(
+                                                                gradient: LinearGradient(
+                                                                  begin: FractionalOffset.topCenter,
+                                                                  end: FractionalOffset.bottomCenter,
+                                                                  colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                                                                ),
+                                                                child: Text("Read Reviews", style: TextStyle(color: Colors.white),),
+                                                                onPressed: (){
 
-                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                                    ReadReviewsPage(rest_id: restaurantKeyLists[index], name: restaurantListMap[index]["name"], avg_rating: restaurantListMap[index]["avg_rating"], image: restaurantListMap[index]["image"])
-                                                                ));
+                                                                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                                      ReadReviewsPage(rest_id: restaurantKeyLists[index], name: restaurantListMap[index]["name"], avg_rating: restaurantListMap[index]["avg_rating"], image: restaurantListMap[index]["image"])
+                                                                  ));
 
-                                                              },
-                                                            )
-                                                        ),
-                                                      ],
+                                                                },
+                                                              )
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -927,7 +947,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                     },
                                     child: Card(
                                       elevation: 3,
-                                      margin: EdgeInsets.all(10),
+                                      margin: EdgeInsets.fromLTRB(25,10,25,10),
                                       child: Container(
                                         padding: EdgeInsets.all(10),
                                         width: MediaQuery.of(context).size.width,
@@ -942,7 +962,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                   Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: <Widget>[
-                                                      Container(width: screenWidth - 110,
+                                                      Container(width: screenWidth - 140,
                                                           padding: EdgeInsets.all(5),
                                                           child: Text(eventListMap[index]["name"], style: TextStyle(fontSize: 20), softWrap: true,)),
                                                       Container(width: 45,
@@ -952,59 +972,74 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                       Icon(Icons.star),
                                                     ],
                                                   ),
-                                                  Container(width: screenWidth - 40,
-                                                      height: 250,
+                                                  Container(width: screenWidth - 70,
+                                                      height: screenWidth - 230,
                                                       padding: EdgeInsets.only(top: 6, bottom: 3),
-                                                      child: Image.network(eventListMap[index]["image"], fit: BoxFit.fill,)),
+                                                      child: ClipRRect(
+                                                        borderRadius: BorderRadius.all(Radius.circular(9)),
+                                                          child: Image.network(eventListMap[index]["image"], fit: BoxFit.cover,))),
                                                   Container(
-                                                    width: screenWidth-40,
+                                                    width: screenWidth-70,
                                                     child: Text(
                                                       'Footfall: '+ eventListMap[index]["footfall"].toString(),
                                                       softWrap: true,
                                                     ),
                                                   ),
                                                   Container(
-                                                    width: screenWidth-40,
+                                                    width: screenWidth-70,
                                                     child: Text(
                                                       'Location: '+ eventListMap[index]["location"].toString(),
                                                       softWrap: true,
                                                     ),
                                                   ),
                                                   Container(
-                                                    width: screenWidth-40,
+                                                    width: screenWidth-70,
                                                     child: Text(
                                                       'Type: '+ eventListMap[index]["type"].toString(),
                                                       softWrap: true,
                                                     ),
                                                   ),
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: <Widget>[
-                                                      Container(width: 160,
-                                                          padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                          child: FlatButton(
-                                                            child: Text("Write Review", style: TextStyle(color: Colors.blue),),
-                                                            onPressed: (){
+                                                  Container(
+                                                    width: screenWidth-70,
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: <Widget>[
+                                                        Container(width: 160,
+                                                            padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                            child: RaisedGradientButton(
+                                                              gradient: LinearGradient(
+                                                                begin: FractionalOffset.topCenter,
+                                                                end: FractionalOffset.bottomCenter,
+                                                                colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                                                              ),
+                                                              child: Text("Write Review", style: TextStyle(color: Colors.white),),
+                                                              onPressed: (){
 
-                                                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddEventReviewPage(event_id: eventKeyLists[index])));
+                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddEventReviewPage(event_id: eventKeyLists[index])));
 
-                                                            },
-                                                          )
-                                                      ),
-                                                      Container(width: 160,
-                                                          padding: EdgeInsets.only(top: 3, bottom: 3),
-                                                          child: FlatButton(
-                                                            child: Text("Read Reviews", style: TextStyle(color: Colors.blue),),
-                                                            onPressed: (){
+                                                              },
+                                                            )
+                                                        ),
+                                                        Container(width: 160,
+                                                            padding: EdgeInsets.only(top: 3, bottom: 3),
+                                                            child: RaisedGradientButton(
+                                                              gradient: LinearGradient(
+                                                                begin: FractionalOffset.topCenter,
+                                                                end: FractionalOffset.bottomCenter,
+                                                                colors: <Color>[Constants().blueFontColor, Color(0xFF5445ae)],
+                                                              ),
+                                                              child: Text("Read Reviews", style: TextStyle(color: Colors.white),),
+                                                              onPressed: (){
 
-                                                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                                  ReadEventReviewsPage(event_id: eventKeyLists[index], name: eventListMap[index]["name"], avg_rating: eventListMap[index]["avg_rating"], image: eventListMap[index]["image"])
-                                                              ));
+                                                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
+                                                                    ReadEventReviewsPage(event_id: eventKeyLists[index], name: eventListMap[index]["name"], avg_rating: eventListMap[index]["avg_rating"], image: eventListMap[index]["image"])
+                                                                ));
 
-                                                            },
-                                                          )
-                                                      ),
-                                                    ],
+                                                              },
+                                                            )
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -1144,4 +1179,52 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
   }
 
 
+}
+
+
+
+
+class RaisedGradientButton extends StatelessWidget {
+  final Widget child;
+  final Gradient gradient;
+  final double width;
+  final double height;
+  final Function onPressed;
+
+  const RaisedGradientButton({
+    Key key,
+    @required this.child,
+    this.gradient,
+    this.width = double.infinity,
+    this.height = 50.0,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: 40.0,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[500],
+              offset: Offset(0.0, 1.5),
+              blurRadius: 1.5,
+            ),
+          ]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+            onTap: onPressed,
+            child: Center(
+              child: child,
+            )),
+      ),
+    );
+  }
 }

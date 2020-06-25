@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ocd/Constants.dart';
 import 'package:ocd/Screens/Login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,21 +66,24 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Container(
-                        height: MediaQuery.of(context).size.height-140,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Container(
+                              alignment: Alignment.center,
                                 margin: EdgeInsets.all(10),
-                                child: CircleAvatar(backgroundImage: NetworkImage(userMap['profile_pic']?? user.photoUrl),radius: 65,)),
+                                child: CircleAvatar(backgroundImage: NetworkImage(userMap['profile_pic']?? user.photoUrl),radius: 85,)),
                             Container(
+                                alignment: Alignment.center,
                                 width: screenWidth-10,
                                 padding: EdgeInsets.all(10),
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Text('Name: ', style: TextStyle(fontSize: 20, color: Colors.grey[700]), textAlign: TextAlign.center,),
-                                    Text(userMap['name'], style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                                    Text('Name: ', style: TextStyle(fontSize: 20, color: Constants().blueFontColor), textAlign: TextAlign.center,),
+                                    Text(userMap['name'], style: TextStyle(fontSize: 20, color: Constants().blueFontColor), textAlign: TextAlign.center),
                                   ],
                                 )
                             ),
@@ -87,9 +91,11 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                 width: screenWidth-10,
                                 padding: EdgeInsets.all(10),
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Text('Phone: ', style: TextStyle(fontSize: 20, color: Colors.grey[700]), textAlign: TextAlign.center,),
-                                    Text(userMap['mobile'], style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                                    Text('Phone: ', style: TextStyle(fontSize: 20, color: Constants().blueFontColor), textAlign: TextAlign.center,),
+                                    Text(userMap['mobile'], style: TextStyle(fontSize: 20, color: Constants().blueFontColor), textAlign: TextAlign.center,),
                                   ],
                                 )
                             ),
@@ -97,38 +103,35 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                 width: screenWidth-10,
                                 padding: EdgeInsets.all(10),
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Text('Email: ', style: TextStyle(fontSize: 20, color: Colors.grey[700]), textAlign: TextAlign.center,),
-                                    Text(userMap['email'], style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                                    Text('Email: ', style: TextStyle(fontSize: 20, color: Constants().blueFontColor), textAlign: TextAlign.center,),
+                                    Text(userMap['email'], style: TextStyle(fontSize: 20, color: Constants().blueFontColor), textAlign: TextAlign.center,),
                                   ],
                                 )
                             ),
                             Container(
                                 width: screenWidth-10,
                                 padding: EdgeInsets.all(10),
-                                child: Row(
+                                child: Column(
                                   children: <Widget>[
-                                    Flexible(
-                                        child: Text(
-                                          'Favorites: ',
-                                          style: TextStyle(fontSize: 20, color: Colors.grey[700]),
-                                          textAlign: TextAlign.center,
-                                          softWrap: true,
-                                        )
+                                    Text(
+                                      'Interests',
+                                      style: TextStyle(fontSize: 20, color: Constants().blueFontColor, decoration: TextDecoration.underline,),
+                                      textAlign: TextAlign.center,
+                                      softWrap: true,
                                     ),
-                                    Flexible(
-                                        child: Container(
-                                          color: Colors.black12,
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.all(5),
-                                          width: 900,
-                                          height: 145,
-                                          child: Text(
-                                            userMap['fav_cuisines'].toString().replaceAll('[', '').replaceAll(']', ''),
-                                            style: TextStyle(fontSize: 16, wordSpacing: 2.0),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        )
+                                    Container(
+                                      alignment: Alignment.center,
+                                      padding: EdgeInsets.all(5),
+                                      width: 900,
+                                      child: Text(
+                                        userMap['fav_cuisines'].toString().replaceAll('[', '').replaceAll(']', ''),
+                                        style: TextStyle(fontSize: 16, wordSpacing: 2.0, color: Constants().blueFontColor),
+                                        textAlign: TextAlign.center,
+                                        softWrap: true
+                                      ),
                                     ),
                                   ],
                                 )

@@ -4,6 +4,7 @@ import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ocd/Constants.dart';
 
 class AnalysisPage extends StatefulWidget {
 
@@ -46,7 +47,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
               Container(
                 padding: EdgeInsets.all(10),
-                child: Text('Your Login Records'),
+                child: Text('Your Login Records', style: TextStyle(color: Constants().blueFontColor),),
               ),
               FutureBuilder(
                 future: getLoginRecords(),
@@ -62,11 +63,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     counter = 0;
                     loginRecordsMap.forEach((k,v){
                       v==true? counter++ : counter=0;
-                      loginPerDayList.add(new LoginPerDay(k, v==true ? 1 : 0, Colors.deepOrange[700]));
+                      loginPerDayList.add(new LoginPerDay(k, v==true ? 1 : 0, Constants().blueFontColor));
                     });
 
                     var series = [
                       new charts.Series(
+                        colorFn: (_, __) => charts.ColorUtil.fromDartColor(Constants().blueFontColor),
                         id: 'Visited',
                         domainFn: (LoginPerDay clickData, _) => clickData.date,
                         measureFn: (LoginPerDay clickData, _) => clickData.isLogged,
@@ -88,7 +90,10 @@ class _AnalysisPageState extends State<AnalysisPage> {
                         ),
                         Container(
                           padding: EdgeInsets.all(10),
-                          child: Text('YOU\'VE BEEN REGULAR FOR '+counter.toString()+' DAYS in a row' ),
+                          child: Text(
+                            'YOU\'VE BEEN REGULAR FOR '+counter.toString()+' DAYS in a row',
+                            style: TextStyle(color: Constants().blueFontColor),
+                          ),
                         ),
                       ],
                     );
@@ -118,7 +123,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
 class LoginPerDay {
   final String date;
   final int isLogged;
-  final Color color;
+  Color color = Constants().blueFontColor;
 
   LoginPerDay(this.date, this.isLogged, this.color);
 }
