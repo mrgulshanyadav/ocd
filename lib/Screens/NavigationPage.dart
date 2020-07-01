@@ -55,7 +55,7 @@ class _NavigationPageState extends State<NavigationPage> {
               ),
               BottomNavigationBarItem(
                 icon: new Icon(Icons.shop, color: _currentIndex == 3 ? Constants().navigationSelectedColor : Colors.grey,),
-                title: new Text('Dukaan', style: TextStyle(color: _currentIndex == 3 ? Constants().navigationSelectedColor : Colors.grey,),),
+                title: new Text('Dukaann', style: TextStyle(color: _currentIndex == 3 ? Constants().navigationSelectedColor : Colors.grey,),),
               ),
               BottomNavigationBarItem(
                 icon: new Icon(Icons.person, color: _currentIndex == 4 ? Constants().navigationSelectedColor : Colors.grey,),

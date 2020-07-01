@@ -740,7 +740,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                       child: Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: <Widget>[
-                                                          Container(width: 160,
+                                                          Container(width: screenWidth/3,
                                                               padding: EdgeInsets.only(top: 3, bottom: 3),
                                                               child: RaisedGradientButton(
                                                                 gradient: LinearGradient(
@@ -756,7 +756,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                                 },
                                                               )
                                                           ),
-                                                          Container(width: 160,
+                                                          Container(width: screenWidth/3,
                                                               padding: EdgeInsets.only(top: 3, bottom: 3),
                                                               child: RaisedGradientButton(
                                                                 gradient: LinearGradient(
@@ -1004,7 +1004,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                     child: Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
-                                                        Container(width: 160,
+                                                        Container(width: screenWidth/3,
                                                             padding: EdgeInsets.only(top: 3, bottom: 3),
                                                             child: RaisedGradientButton(
                                                               gradient: LinearGradient(
@@ -1020,7 +1020,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                               },
                                                             )
                                                         ),
-                                                        Container(width: 160,
+                                                        Container(width: screenWidth/3,
                                                             padding: EdgeInsets.only(top: 3, bottom: 3),
                                                             child: RaisedGradientButton(
                                                               gradient: LinearGradient(

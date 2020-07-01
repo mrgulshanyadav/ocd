@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Models/CartItem.dart';
 import 'package:ocd/Screens/Enquire/Controller/EnquireProductFormController.dart';
 import 'package:ocd/Screens/Enquire/EnquireServicePage.dart';
 import 'package:ocd/Screens/Enquire/Model/EnquireProductForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constants.dart';
+import '../Dukaan/CartPage.dart';
 
 class ViewServicePage extends StatefulWidget {
   Map<String, dynamic> postMap;
@@ -28,10 +30,18 @@ class _ViewServicePageState extends State<ViewServicePage> {
     bool is_guest = prefs.getBool('isGuest')??false;
     setState(() {
       isGuest = is_guest;
+      try {
+        _cartItemList = CartItem.decodeCartItems(prefs.getString("cart_items"));
+      }catch(e){
+        _cartItemList = [];
+      }
     });
 
     return is_guest;
   }
+
+  List<String> _list = new List();
+  List<CartItem> _cartItemList = new List();
 
   @override
   void initState() {
@@ -49,6 +59,16 @@ class _ViewServicePageState extends State<ViewServicePage> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Constants().dukaanBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Constants().dukaanBackgroundColor,
+        title: Text(widget.postMap['title']),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -64,7 +84,7 @@ class _ViewServicePageState extends State<ViewServicePage> {
                       tag: widget.id,
                       child: Container(
                           width: screenWidth,
-                          height: 280,
+                          height: screenHeight-330,
                           child: Image.network(widget.postMap["service_image_url"][0], fit: BoxFit.cover,)
                       ),
                     ),
@@ -109,9 +129,40 @@ class _ViewServicePageState extends State<ViewServicePage> {
                               end: FractionalOffset.bottomCenter,
                               colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
                             ),
-                            child: Text('Buy', style: TextStyle(color: Colors.white),), onPressed: (){
+                            child: Text('Add to Cart', style: TextStyle(color: Colors.white),),
+                            onPressed: () async {
 
-                          },),
+//                              Navigator.of(context).push(MaterialPageRoute(
+//                                builder: (context)=> PaymentPage(
+//                                  amount: widget.postMap['price'],
+//                                  title: widget.postMap['title'],
+//                                  description: widget.postMap['description'],
+//                                )
+//                              ));
+
+                            setState(() {
+                              _cartItemList.add(
+                                new CartItem(
+                                    id: widget.id,
+                                    total_amount: (int.parse(widget.postMap['price'])).toString(),
+                                    description: widget.postMap['description'],
+                                    title: widget.postMap['title'],
+                                    image: widget.postMap['service_image_url'][0],
+                                    quantity: "1",
+                                    price: widget.postMap['price']
+                                ),
+                              );
+                            });
+
+                              String encodedCartItems = CartItem.encodeCartItems(_cartItemList);
+
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              prefs.setString("cart_items", encodedCartItems);
+
+                              _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Item Added to Cart!"),));
+
+                            },
+                          ),
                           widget.postMap['enquire_enable']?
                           RaisedGradientButton(
                             width: 100,
@@ -171,6 +222,47 @@ class _ViewServicePageState extends State<ViewServicePage> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: new Container(
+            height: 150.0,
+            width: 30.0,
+            alignment: Alignment.center,
+            child: new Stack(
+              children: <Widget>[
+                new IconButton(icon: new Icon(Icons.shopping_cart,
+                  color: Colors.white,),
+                  onPressed: null,
+                ),
+                _cartItemList.length ==0 ? new Container() :
+                new Positioned(
+                    child: new Stack(
+                      children: <Widget>[
+                        new Icon(
+                            Icons.brightness_1,
+                            size: 20.0, color: Colors.green[800]),
+                        new Positioned(
+                            top: 3.0,
+                            right: 4.0,
+                            child: new Center(
+                              child: new Text(
+                                _cartItemList.length.toString(),
+                                style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11.0,
+                                    fontWeight: FontWeight.w500
+                                ),
+                              ),
+                            )),
+                      ],
+                    )),
+              ],
+            )
+        ),
+        backgroundColor: Constants().navigationSelectedColor,
+        onPressed: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CartPage()));
+        },
       ),
     );
   }

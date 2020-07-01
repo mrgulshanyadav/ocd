@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Constants.dart';
 import 'AddReviewPage.dart';
 import 'RatingsAnalysis.dart';
 
@@ -66,12 +67,12 @@ class _ReadEventReviewsPageState extends State<ReadEventReviewsPage> {
                         children: <Widget>[
                           Container(width: screenWidth - 90,
                               padding: EdgeInsets.only(top: 3),
-                              child: Text(widget.name, style: TextStyle(fontSize: 20), softWrap: true,)),
+                              child: Text(widget.name, style: TextStyle(fontSize: 20, color: Constants().blueFontColor), softWrap: true,)),
                           Container(width: 45,
                               alignment: Alignment.topRight,
                               padding: EdgeInsets.only(top: 3, right: 3),
-                              child: Text(widget.avg_rating, style: TextStyle(fontSize: 20), softWrap: true,)),
-                          Icon(Icons.star),
+                              child: Text(widget.avg_rating, style: TextStyle(fontSize: 20, color: Colors.yellow), softWrap: true,)),
+                          Icon(Icons.star, color: Colors.yellow),
                         ],
                       ),
                     ),
@@ -106,28 +107,34 @@ class _ReadEventReviewsPageState extends State<ReadEventReviewsPage> {
                                 child: Container(
                                   padding: EdgeInsets.all(10),
                                   width: MediaQuery.of(context).size.width,
-                                  color: Colors.grey[000],
+                                  color: Colors.grey[200],
                                   child: Column(
                                     children: <Widget>[
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
-                                          Container(width: screenWidth - 110,
+                                          Container(width: screenWidth - 160,
                                               padding: EdgeInsets.only(top: 3),
-                                              child: Text(reviewsListMap[index]['posted_by_name'], style: TextStyle(fontSize: 18, color: Colors.grey[700]), softWrap: false,)),
-                                          Container(width: 45,
-                                              alignment: Alignment.topRight,
-                                              padding: EdgeInsets.only(top: 3, right: 3),
-                                              child: Text(reviewsListMap[index]['rating'], style: TextStyle(fontSize: 20), softWrap: true,)),
-                                          Icon(Icons.star),
+                                              child: Text(reviewsListMap[index]['posted_by_name'], style: TextStyle(fontSize: 18, color: Constants().blueFontColor), softWrap: false,)),
+//                                          Container(width: 45,
+//                                              alignment: Alignment.topRight,
+//                                              padding: EdgeInsets.only(top: 3, right: 3),
+//                                              child: Text(reviewsListMap[index]['rating'], style: TextStyle(fontSize: 20, color: Colors.yellow), softWrap: true,)),
+//                                          Icon(Icons.star, color: Colors.yellow),
+                                          StarRating(
+                                            rating: double.parse(reviewsListMap[index]['rating']),
+                                            color: Colors.yellow,
+                                          ),
+
                                         ],
                                       ),
+
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Container(
-                                              padding: EdgeInsets.only(top: 5, bottom: 7),
-                                              child: Text(reviewsListMap[index]['review'], style: TextStyle(fontSize: 20), softWrap: true,)
+                                              padding: EdgeInsets.only(top: 15, bottom: 7),
+                                              child: Text(reviewsListMap[index]['review'], style: TextStyle(fontSize: 20, color: Constants().blueFontColor), softWrap: true,)
                                           ),
                                         ],
                                       ),
@@ -177,7 +184,7 @@ class StarRating extends StatelessWidget {
   final double rating;
   final RatingChangeCallback onRatingChanged;
   final Color color;
-  double size = 32;
+  double size = 24;
 
   StarRating({this.starCount = 5, this.rating = .0, this.onRatingChanged, this.color});
 
@@ -212,7 +219,7 @@ class StarRating extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(left: 15),
+        padding: EdgeInsets.only(left: 0),
         child: new Row(mainAxisAlignment: MainAxisAlignment.start, children: new List.generate(starCount, (index) => buildStar(context, index)))
     );
   }

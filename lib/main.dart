@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ocd/Screens/Dukaan/PaymentPage.dart';
 import './Screens/NavigationPage.dart';
 import 'Screens/Register.dart';
 import 'Screens/Login.dart';

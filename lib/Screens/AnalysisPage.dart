@@ -37,6 +37,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      appBar: AppBar(title: Text("Login Analysis"),),
       key: _scaffoldKey,
       body: SafeArea(
         child: SingleChildScrollView(

@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_counter/flutter_counter.dart';
+import 'package:ocd/Models/CartItem.dart';
+import 'package:ocd/Screens/Dukaan/CartPage.dart';
 import 'package:ocd/Screens/Enquire/Controller/EnquireProductFormController.dart';
 import 'package:ocd/Screens/Enquire/EnquireProductPage.dart';
 import 'package:ocd/Screens/Enquire/Model/EnquireProductForm.dart';
@@ -28,15 +31,26 @@ class _ViewProductPageState extends State<ViewProductPage> {
     bool is_guest = prefs.getBool('isGuest')??false;
     setState(() {
       isGuest = is_guest;
+      try {
+        _cartItemList = CartItem.decodeCartItems(prefs.getString("cart_items"));
+      }catch(e){
+        _cartItemList = [];
+      }
     });
 
     return is_guest;
   }
 
+  int _quantity;
+
+  List<String> _list = new List();
+  List<CartItem> _cartItemList = new List();
+
   @override
   void initState() {
 
     checkIfGuest();
+    _quantity = 1;
 
     super.initState();
   }
@@ -49,6 +63,16 @@ class _ViewProductPageState extends State<ViewProductPage> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Constants().dukaanBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Constants().dukaanBackgroundColor,
+        title: Text(widget.postMap['title']),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -64,7 +88,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
                       tag: widget.id,
                       child: Container(
                           width: screenWidth,
-                          height: 280,
+                          height: screenHeight-330,
                           child: Image.network(widget.postMap["product_image_url"][0], fit: BoxFit.cover,)
                       ),
                     ),
@@ -98,6 +122,37 @@ class _ViewProductPageState extends State<ViewProductPage> {
                 Container(
                   child: Column(
                     children: <Widget>[
+                      widget.postMap['buy_enable']? Container(
+                        margin: EdgeInsets.only(left: 10, bottom: 15),
+                        child: Row(
+                          children: <Widget>[
+                            Text("Quantity ", style: TextStyle(color: Constants().dukaanFontColor),),
+                            IconButton(
+                              icon: Icon(Icons.remove_circle, color: Constants().dukaanFontColor,),
+                              onPressed: (){
+                                if(_quantity>1) {
+                                  setState(() {
+                                    _quantity--;
+                                  });
+                                }
+                              },
+                            ),
+                            Text("$_quantity", style: TextStyle(color: Constants().dukaanFontColor),),
+                            IconButton(
+                              icon: Icon(Icons.add_circle, color: Constants().dukaanFontColor,),
+                              onPressed: (){
+                                setState(() {
+                                  _quantity++;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ): Container(),
+                      Container(
+                        margin: EdgeInsets.only(left: 10, bottom: 15),
+                        child: Text("Total Price: "+(_quantity*int.parse(widget.postMap['price'].toString().contains(".")? widget.postMap['price'].toString().split(".")[0]: widget.postMap['price'])).toString(), style: TextStyle(color: Constants().dukaanFontColor, fontWeight: FontWeight.bold),)
+                      ),
                       Divider(color: Colors.white70,),
                       widget.postMap['buy_enable']? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -109,9 +164,41 @@ class _ViewProductPageState extends State<ViewProductPage> {
                               end: FractionalOffset.bottomCenter,
                               colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
                             ),
-                            child: Text('Buy', style: TextStyle(color: Colors.white),), onPressed: (){
+                            child: Text('Add to Cart', style: TextStyle(color: Colors.white),),
+                            onPressed: () async {
 
-                          },),
+//                              Navigator.of(context).push(MaterialPageRoute(
+//                                  builder: (context)=> PaymentPage(
+//                                    amount: (_quantity*int.parse(widget.postMap['price'])).toString(),
+//                                    title: widget.postMap['title'],
+//                                    description: widget.postMap['description'],
+//                                  )
+//                              ));
+
+
+                            setState(() {
+                             _cartItemList.add(
+                               new CartItem(
+                                   id: widget.id,
+                                   total_amount: (int.parse(widget.postMap['price'])*_quantity).toString(),
+                                   description: widget.postMap['description'],
+                                   title: widget.postMap['title'],
+                                   image: widget.postMap['product_image_url'][0],
+                                   quantity: _quantity.toString(),
+                                   price: widget.postMap['price']
+                               ),
+                             );
+                            });
+
+                             String encodedCartItems = CartItem.encodeCartItems(_cartItemList);
+
+                             SharedPreferences prefs = await SharedPreferences.getInstance();
+                             prefs.setString("cart_items", encodedCartItems);
+
+                             _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Item Added to Cart!"),));
+
+                            },
+                          ),
                           widget.postMap['enquire_enable']?
                           RaisedGradientButton(
                             width: 100,
@@ -168,6 +255,47 @@ class _ViewProductPageState extends State<ViewProductPage> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: new Container(
+            height: 150.0,
+            width: 30.0,
+            alignment: Alignment.center,
+            child: new Stack(
+              children: <Widget>[
+                new IconButton(icon: new Icon(Icons.shopping_cart,
+                  color: Colors.white,),
+                  onPressed: null,
+                ),
+                _cartItemList.length ==0 ? new Container() :
+                new Positioned(
+                    child: new Stack(
+                      children: <Widget>[
+                        new Icon(
+                            Icons.brightness_1,
+                            size: 20.0, color: Colors.green[800]),
+                        new Positioned(
+                            top: 3.0,
+                            right: 4.0,
+                            child: new Center(
+                              child: new Text(
+                                _cartItemList.length.toString(),
+                                style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11.0,
+                                    fontWeight: FontWeight.w500
+                                ),
+                              ),
+                            )),
+                      ],
+                    )),
+              ],
+            )
+        ),
+        backgroundColor: Constants().navigationSelectedColor,
+        onPressed: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CartPage()));
+        },
       ),
     );
   }

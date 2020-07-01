@@ -166,7 +166,7 @@ class _SearchPageState extends State<SearchPage> {
                                                 children: <Widget>[
                                                   Visibility(
                                                     child: Container(
-                                                        width: 160,
+                                                        width: screenWidth/3,
                                                         padding: EdgeInsets.only(top: 3, bottom: 3),
                                                         child: RaisedGradientButton(
                                                           gradient: LinearGradient(
@@ -184,7 +184,7 @@ class _SearchPageState extends State<SearchPage> {
                                                     ),
                                                   ),
                                                   Container(
-                                                      width: 160,
+                                                      width: screenWidth/3,
                                                       padding: EdgeInsets.only(top: 3, bottom: 3),
                                                       child: RaisedGradientButton(
                                                         gradient: LinearGradient(

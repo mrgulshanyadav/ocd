@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ocd/Constants.dart';
+import 'package:ocd/Models/CartItem.dart';
+import 'package:ocd/Screens/Dukaan/CartPage.dart';
 import 'package:ocd/Screens/Dukaan/ViewServicePage.dart';
 import 'package:ocd/Screens/Enquire/Controller/EnquireProductFormController.dart';
 import 'package:ocd/Screens/Enquire/EnquireProductPage.dart';
@@ -29,10 +31,18 @@ class _DukaanPageState extends State<DukaanPage> {
 
   bool isGuest;
 
+  List<String> _list= new List();
+  List<CartItem> _cartItemList = new List();
+
   Future<void> getLocationDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       isGuest = prefs.getBool('isGuest')??false;
+      try {
+        _cartItemList = CartItem.decodeCartItems(prefs.getString("cart_items"));
+      }catch(e){
+        _cartItemList = [];
+      }
     });
   }
 
@@ -301,6 +311,47 @@ class _DukaanPageState extends State<DukaanPage> {
               },
             ),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: new Container(
+              height: 150.0,
+              width: 30.0,
+              alignment: Alignment.center,
+              child: new Stack(
+                children: <Widget>[
+                  new IconButton(icon: new Icon(Icons.shopping_cart,
+                    color: Colors.white,),
+                    onPressed: null,
+                  ),
+                  _cartItemList.length ==0 ? new Container() :
+                  new Positioned(
+                      child: new Stack(
+                        children: <Widget>[
+                          new Icon(
+                              Icons.brightness_1,
+                              size: 20.0, color: Colors.green[800]),
+                          new Positioned(
+                              top: 3.0,
+                              right: 4.0,
+                              child: new Center(
+                                child: new Text(
+                                  _cartItemList.length.toString(),
+                                  style: new TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11.0,
+                                      fontWeight: FontWeight.w500
+                                  ),
+                                ),
+                              )),
+                        ],
+                      )),
+                ],
+              )
+          ),
+          backgroundColor: Constants().navigationSelectedColor,
+          onPressed: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context)=> CartPage()));
+          },
         ),
       ),
     ):

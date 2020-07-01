@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Constants.dart';
+
 class ViewPostPage extends StatefulWidget {
   Map<String, dynamic> postMap;
   bool isLiked;
@@ -54,6 +56,16 @@ class _ViewPostPageState extends State<ViewPostPage> {
 
     return Scaffold(
       key: _scaffoldKey,
+      appBar: AppBar(
+//        backgroundColor: Constants().dukaanBackgroundColor,
+        title: Text(widget.postMap['title']),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(

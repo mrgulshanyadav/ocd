@@ -1,5 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const nodemailer = require('nodemailer');
+const cors = require('cors')({origin: true});
 admin.initializeApp();
 
 exports.myFunction = functions.firestore
@@ -194,3 +196,122 @@ exports.myFunction = functions.firestore
   });
   
 
+ 
+  /**
+  * Here we're using Gmail to send 
+  */
+  let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, 
+      auth: {
+          user: 'reachocddelhi@gmail.com',
+          pass: 'hello1208'
+      }
+  });
+  
+  exports.sendMailToVendor = functions.https.onRequest((req, res) => {
+      cors(req, res, () => {
+        
+          // getting dest email by query string
+          const email = req.query.email;
+          const orderId = req.query.orderId;
+          const userId = req.query.userId;
+          const transId = req.query.transId;
+          const mobile = req.query.mobile;
+          const name = req.query.name;
+          const delivery_address = req.query.delivery_address;
+          const items = req.query.items;
+          const total_amount = req.query.total_amount;
+
+
+          const mailOptions = {
+            from: 'OCD <reachocddelhi@gmail.com>', // Something like: Jane Doe <janedoe@gmail.com>
+            to: 'dukaannindia@gmail.com',
+            subject: 'New Order from OCD App', // email subject
+            html: `<p style="font-size: 16px;">New Order Received!!</p>
+                <br />
+                <p>
+
+                UserId: `+userId+` <br />
+
+                Name: `+name+` <br />
+                Mobile: `+mobile+` <br />
+                Delivery Address: `+delivery_address+` <br />
+  
+                <b> Total Amount: Rs.`+total_amount+` </b> <br /> <br />
+                <b> Transaction ID: `+transId+` </b>
+                <b> Order ID: `+orderId+` </b> <br />
+  
+                Items: `+items+` <br />
+                  </p>
+            ` // email content in HTML
+          };
+
+          // returning result
+          return transporter.sendMail(mailOptions, (erro, info) => {
+              if(erro){
+                  return res.send(erro.toString());
+              }
+              return res.send('Sent');
+          });
+
+  
+      });    
+  });
+
+
+  exports.sendMailToUser = functions.https.onRequest((req, res) => {
+    cors(req, res, () => {
+      
+        // getting dest email by query string
+        const email = req.query.email;
+        const orderId = req.query.orderId;
+        const userId = req.query.userId;
+        const transId = req.query.transId;
+        const mobile = req.query.mobile;
+        const name = req.query.name;
+        const delivery_address = req.query.delivery_address;
+        const items = req.query.items;
+        const total_amount = req.query.total_amount;
+
+
+        const mailOptions = {
+          from: 'OCD <reachocddelhi@gmail.com>', // Something like: Jane Doe <janedoe@gmail.com>
+          to: email,
+          subject: 'Order Successfully Placed on OCD App', // email subject
+          html: `<p style="font-size: 16px;">Your Order with Dukaann has been placed successfully!</p>
+              <br />
+              <p> 
+              Name: `+name+` <br />
+              Mobile: `+mobile+` <br />
+              Delivery Address: `+delivery_address+` <br />
+
+              <b> Total Amount: Rs.`+total_amount+` </b> <br /> <br />
+              <b> Transaction ID: `+transId+` </b>
+              <b> Order ID: `+orderId+` </b> <br />
+
+              Items: `+items+` <br />
+
+              You will be updated about the order status as soon as possible, please stay patient until then ! 
+              Thank you for shopping with us. 
+              For any queries you can contact us on reachocddelhi@gmail.com. 
+
+              Best wishes, 
+              Our Chutzpah Diaries (OCD).
+              </p>
+
+          ` // email content in HTML
+        };
+
+        // returning result
+        return transporter.sendMail(mailOptions, (erro, info) => {
+            if(erro){
+                return res.send(erro.toString());
+            }
+            return res.send('Sent');
+        });
+
+
+    });    
+});

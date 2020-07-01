@@ -39,8 +39,11 @@ dependencies:
   webview_flutter: ^0.3.20+2
   pie_chart: ^3.1.1
   dotted_border: ^1.0.5
-
-
+  flutter_counter: ^1.0.0
+  flutter_razorpay_sdk: ^0.1.4
+  razorpay_flutter: ^1.2.1
+  fluttertoast: ^4.0.1
+  http: ^0.12.1
 
 dev_dependencies:
   flutter_test:
