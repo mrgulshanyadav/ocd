@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import '../../Constants.dart';
 import '../NavigationPage.dart';
+import 'PaymentStatusPage.dart';
 
 
 class PaymentPage extends StatefulWidget {
@@ -198,36 +199,6 @@ class _PaymentPageState extends State<PaymentPage> {
 
                         openCheckout();
 
-//                      SponsorshipForEventsForm feedbackForm = SponsorshipForEventsForm(
-//                          company_name,
-//                          company_link,
-//                          phone_number,
-//                          email_id
-//                      );
-//
-//                      SponsorshipForEventsFormController formController = SponsorshipForEventsFormController((String response) {
-//                        print("Response: $response");
-//                        if (response == SponsorshipForEventsFormController.STATUS_SUCCESS) {
-//                          // Feedback is saved succesfully in Google Sheets.
-//                          setState(() {
-//                            isLoading = false;
-//                          });
-//                          _showSnackbar("Feedback Submitted");
-//                        } else {
-//                          // Error Occurred while saving data in Google Sheets.
-//                          setState(() {
-//                            isLoading = false;
-//                          });
-//                          _showSnackbar("Error Occurred!");
-//                        }
-//                      }
-//                      );
-//
-//                      _showSnackbar("Submitting Feedback");
-//
-//                      // Submit 'feedbackForm' and save it in Google Sheets.
-//                      formController.submitForm(feedbackForm);
-
                       }
 
                     },
@@ -326,7 +297,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 '&userId='+widget.user.uid+
                 '&name='+widget.username+
                 '&mobile='+widget.mobile+
-                '&delivery_address='+addressMap.toString()+
+                '&delivery_address='+address_line_1+", "+address_line_2+", "+city+", "+state+", "+country+", "+pin+
                 '&items='+CartItem.encodeCartItems(widget.cartItemList)+
                 '&total_amount='+total_amount.toString()
         );
@@ -341,7 +312,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 '&userId='+widget.user.uid+
                 '&name='+widget.username+
                 '&mobile='+widget.mobile+
-                '&delivery_address='+addressMap.toString()+
+                '&delivery_address='+address_line_1+", "+address_line_2+", "+city+", "+state+", "+country+", "+pin+
                 '&items='+CartItem.encodeCartItems(widget.cartItemList)+
                 '&total_amount='+total_amount.toString()
         );
@@ -416,108 +387,6 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
 }
-
-
-class PaymentStatusPage extends StatefulWidget {
-  String orderId, transId, totalAmount;
-  bool isStatusSuccess;
-
-  PaymentStatusPage({this.orderId, this.totalAmount, this.transId, this.isStatusSuccess});
-
-  @override
-  _PaymentStatusPageState createState() => _PaymentStatusPageState();
-}
-
-class _PaymentStatusPageState extends State<PaymentStatusPage> {
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.all(15.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                CircleAvatar(
-                  radius: 36,
-                  backgroundColor: widget.isStatusSuccess? Colors.green: Colors.red,
-                  child: Icon(widget.isStatusSuccess? Icons.check: Icons.close, size: 36, color: Colors.white,),
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 50.0, bottom: 20.0, right: 20.0, left: 20.0),
-                  child: Text(
-                      widget.isStatusSuccess?
-                      "Order has been successfully placed." :
-                      "Order failed.",
-                       style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                widget.isStatusSuccess? Container(
-                  padding: EdgeInsets.only(top: 55.0),
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: Text(
-                          "Order Id: "+widget.orderId,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: Text(
-                          "Transaction Id: "+widget.transId,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: Text(
-                          "Total Amount: "+widget.totalAmount,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-
-                    ],
-                  ),
-                ): Container(),
-                SizedBox(
-                  height: 70,
-                ),
-                RaisedGradientButton(
-                  onPressed: (){
-                    Navigator.of(context).push(new MaterialPageRoute(
-                        builder: (context)=> NavigationPage()
-                    ));
-                  },
-                  child: Text('Go to Home', style: TextStyle(color: Colors.white),),
-                  width: 100,
-                  gradient: LinearGradient(
-                    begin: FractionalOffset.topCenter,
-                    end: FractionalOffset.bottomCenter,
-                    colors: <Color>[Constants().dukaanMenuBackgroundColor, Constants().dukaanMenuBackgroundColor],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      )
-    );
-  }
-}
-
 
 
 class RaisedGradientButton extends StatelessWidget {

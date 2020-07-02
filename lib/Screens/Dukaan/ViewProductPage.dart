@@ -1,6 +1,8 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_counter/flutter_counter.dart';
 import 'package:ocd/Models/CartItem.dart';
 import 'package:ocd/Screens/Dukaan/CartPage.dart';
@@ -86,11 +88,17 @@ class _ViewProductPageState extends State<ViewProductPage> {
                   children: <Widget>[
                     Hero(
                       tag: widget.id,
-                      child: Container(
-                          width: screenWidth,
-                          height: screenHeight-330,
-                          child: Image.network(widget.postMap["product_image_url"][0], fit: BoxFit.cover,)
-                      ),
+                      child:
+//                      Container(
+//                          width: screenWidth,
+//                          height: screenHeight-330,
+//                          child: Image.network(widget.postMap["product_image_url"][0], fit: BoxFit.cover,)
+//                      ),
+                      CarouselWithIndicator(
+                        height: screenHeight-330,
+                        width: screenWidth,
+                        imageList: widget.postMap["product_image_url"],
+                      )
                     ),
                     Container(
                       padding: EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 0),
@@ -258,8 +266,8 @@ class _ViewProductPageState extends State<ViewProductPage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: new Container(
-            height: 150.0,
-            width: 30.0,
+            height: 40.0,
+            width: 40.0,
             alignment: Alignment.center,
             child: new Stack(
               children: <Widget>[
@@ -396,6 +404,70 @@ class RaisedGradientButton extends StatelessWidget {
               child: child,
             )),
       ),
+    );
+  }
+}
+
+
+
+
+
+class CarouselWithIndicator extends StatefulWidget {
+  List<dynamic> imageList = new List();
+  double width, height;
+
+  CarouselWithIndicator({this.imageList, this.height, this.width});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _CarouselWithIndicatorState();
+  }
+}
+
+class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
+  int _current = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        children: [
+          CarouselSlider(
+            items: widget.imageList.map((item) => Container(
+              child: Center(
+                  child: Image.network(item.toString(), fit: BoxFit.cover,)
+              ),
+              color: Colors.grey[100],
+            )).toList(),
+            options: CarouselOptions(
+                autoPlay: true,
+                enlargeCenterPage: false,
+                aspectRatio: 2.0,
+                height: widget.height-24,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                }
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: widget.imageList.map((url) {
+              int index = widget.imageList.indexOf(url);
+              return Container(
+                width: 8.0,
+                height: 8.0,
+                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _current != index
+                      ? Colors.white
+                      : Constants().dukaanFontColor,
+                ),
+              );
+            }).toList(),
+          ),
+        ]
     );
   }
 }

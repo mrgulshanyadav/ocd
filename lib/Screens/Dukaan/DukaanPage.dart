@@ -314,8 +314,8 @@ class _DukaanPageState extends State<DukaanPage> {
         ),
         floatingActionButton: FloatingActionButton(
           child: new Container(
-              height: 150.0,
-              width: 30.0,
+              height: 40.0,
+              width: 40.0,
               alignment: Alignment.center,
               child: new Stack(
                 children: <Widget>[
