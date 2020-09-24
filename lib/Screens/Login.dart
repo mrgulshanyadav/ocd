@@ -136,6 +136,9 @@ class _LoginState extends State<Login> {
                                   }
                               ));
 
+                            }else{
+                              print('error: user == null');
+                              _scaffoldKey.currentState.showSnackBar(new SnackBar(content: Text('Error Occured')));
                             }
                           }).catchError((error){
                             print('error:' +error.toString());

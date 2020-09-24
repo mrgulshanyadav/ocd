@@ -711,7 +711,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                                         GestureDetector(
                                                           onTap: (){
                                                             Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                                RatingsAnalysis(rest_id: restaurantKeyLists[index])
+                                                                RatingsAnalysis(rest_id: restaurantKeyLists[index], rest_name: restaurantListMap[index]["name"],)
                                                             ));
                                                           },
                                                           child: Container(width: 45,

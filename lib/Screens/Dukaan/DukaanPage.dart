@@ -10,7 +10,7 @@ import 'package:ocd/Screens/Enquire/Controller/EnquireProductFormController.dart
 import 'package:ocd/Screens/Enquire/EnquireProductPage.dart';
 import 'package:ocd/Screens/Enquire/EnquireServicePage.dart';
 import 'package:ocd/Screens/Enquire/Model/EnquireProductForm.dart';
-import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/ViewProductPage.dart';
+import '../Dukaan/ViewProductPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Login.dart';

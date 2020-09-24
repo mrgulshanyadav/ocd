@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ocd/Constants.dart';
-import 'file:///D:/AndroidStudioProjects/FlutterProjects/ocd/lib/Screens/Dukaan/DukaanPage.dart';
 import './AddPostPage.dart';
 import './HomePage.dart';
 import './RecommendationsPage.dart';
 import './SearchPage.dart';
 import './MyProfilePage.dart';
+import 'Dukaan/DukaanPage.dart';
 
 class NavigationPage extends StatefulWidget {
   @override

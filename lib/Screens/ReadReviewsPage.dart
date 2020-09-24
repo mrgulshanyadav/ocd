@@ -70,7 +70,7 @@ class _ReadReviewsPageState extends State<ReadReviewsPage> {
                           GestureDetector(
                             onTap: (){
                               Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                  RatingsAnalysis(rest_id: widget.rest_id)
+                                  RatingsAnalysis(rest_id: widget.rest_id, rest_name: widget.name,)
                               ));
                             },
                             child: Container(width: 45,

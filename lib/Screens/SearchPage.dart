@@ -133,7 +133,7 @@ class _SearchPageState extends State<SearchPage> {
                                                 GestureDetector(
                                                   onTap: (){
                                                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>
-                                                        RatingsAnalysis(rest_id: keyLists[index])
+                                                        RatingsAnalysis(rest_id: keyLists[index], rest_name: listMap[index]["name"]),
                                                     ));
                                                   },
                                                   child: Container(width: 45,
